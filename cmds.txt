@@ -1,0 +1,13 @@
+python -m pip freeze > requirements.txt
+
+python3 -m venv env
+source env/bin/activate
+python -m pip install django
+
+django-admin startproject <project-name>
+python manage.py startapp <appname>
+
+#Create superuser
+python manage.py createsuperuser
+
+admin@example.com

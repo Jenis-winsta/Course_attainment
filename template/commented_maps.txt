@@ -1,0 +1,48 @@
+{% for year in years %}
+<option value="{{ year.name }}">{{ year.name }}</option>
+{% endfor %}
+
+{% for semester in semesters %}                                        
+                                        <option value="{{ semester.name }}">{{ semester.name }} </option>
+                                        {% endfor %}
+
+ {% for Course in courses %}
+                                        <option value="{{ Course.name }}">{{ Course.name }} </option>
+                                        {% endfor %}                                                                                
+
+
+forms: data-semesters-url="{% url 'ajax_load_semesters' %}">
+<script>
+        $("#id_year").change(function () {
+            const url = $("#enrollmentForm").attr("data-semesters-url");
+            const yearId = $(this).val();
+
+            $.ajax({
+                url: url,
+                data: {
+                    'year_id': yearId
+                },
+                success: function (data) {
+                    $("#id_semester").html(data);
+                }
+            });
+
+        });
+    </script>
+
+
+ <select class="form-select" aria-label="default-option" id="semester" disabled>
+                                        <option selected>-----</option>
+                                        {% for semester in semesters %}
+                                        <option value="{{ semester.name }}">{{ semester.name }} </option>
+                                        {% endfor %}
+                                    </select>
+
+    <option selected>-----</option>
+
+                                        {% for Course in courses %}
+                                        <option value="{{ Course.name }}">{{ Course.name }} </option>
+                                        {% endfor %}
+                                    </select>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
