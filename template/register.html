@@ -148,6 +148,34 @@
     .register-link p a:hover {
       text-decoration: underline;
     }
+
+    /* Your existing styles remain unchanged */
+
+.wrapper .input-box select {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: 2px solid rgba(208, 7, 244, 0.2);
+    border-radius: 40px;
+    font-size: 16px;
+    color: purple;
+    padding: 10px;  /* Adjust the padding as needed */
+    appearance: none;  /* Remove default arrow in some browsers */
+}
+
+/* Style for the new role and department dropdowns */
+.wrapper .input-box select:focus {
+    outline: none;
+}
+
+/* Style for the Bootstrap Select dropdowns */
+.bootstrap-select .bs-searchbox input {
+    width: 100%;
+}
+
+.bootstrap-select .dropdown-menu {
+    border-radius: 10px;
+}
   </style>
   <script></script>
   <script>
@@ -187,6 +215,45 @@
         <!-- <i class="spa"></i> -->
         <i class="bi bi-envelope-arrow-down"></i>
       </div>
+
+      <!-- New role dropdown -->
+      <!-- <div class="input-box">
+        <select name="role" class="selectpicker" data-live-search="true" title="Select Role" required>
+            <option value="hod">Head of Department</option>
+            <option value="teacher">Teacher</option>
+        </select>
+    </div> -->
+
+    <!-- New department dropdown -->
+    <!-- <div class="input-box">
+        <select name="department" class="selectpicker" data-live-search="true" title="Select Department" required>
+            <option value="IT">Information Technology</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="life_science">Life Science</option>
+        </select>
+    </div> -->
+
+    <!-- New role dropdown -->
+<div class="input-box">
+  <select name="role" class="selectpicker" data-live-search="true" required>
+      <option value="" disabled selected>Select Role</option>
+      <option value="HOD">Head of Department</option>
+      <option value="teacher">Teacher</option>
+  </select>
+  <i class="bi bi-chevron-down"></i>
+</div>
+
+<!-- New department dropdown -->
+<div class="input-box">
+  <select name="department" class="selectpicker" data-live-search="true" required>
+      <option value="" disabled selected>Select Department</option>
+      {% for department in department_options %}
+          <option value="{{ department.id }}">{{ department.name }}</option>
+      {% endfor %}
+  </select>
+  <i class="bi bi-chevron-down"></i>
+</div>
+
 
       <div class="input-box">
         <input type="password" name="password" id="password" placeholder="Password" required />

@@ -15,6 +15,7 @@ from django.contrib import messages
 
 from django.conf import settings
 from django.shortcuts import redirect
+from users.models import CustomUser
 
 
 def index(request):
@@ -27,18 +28,7 @@ def index(request):
 
 
 
-# Create your views here.
-# def login(request):
-#     return render(request,'login.html')
 
-
-
-
-
-
-
-def dashboard(request):
-    return render(request, 'dashboard.html', context={'peoples'})
     
 def maps(request):
     years = Year.objects.values('id').distinct().order_by('id')
@@ -55,7 +45,12 @@ def maps(request):
     return render(request, 'maps.html', context)
 
 
-
+# def load_department(request):
+#     dept = Semester.objects.values('name').distinct().order_by('name')
+#     context={
+#         'dept':dept
+#     }
+#     return render(request, '')
 
 
 
@@ -91,18 +86,7 @@ def result(request):
     return render(request, 'result.html', context)
 
 
-    #     return render(request, 'PurpleTemplate/index.html')
-    # else:
-    #     return redirect('login')
-        
 
-
-# def button_page(request):
-#     return render(request, 'PurpleTemplate/pages/ui-features/buttons.html')
-
-
-# def dashboard(request):
-#     return render(request, 'dashboard.html')
 
 
 def register(request):
@@ -111,24 +95,33 @@ def register(request):
         email=request.POST['email']
         password=request.POST['password']
         password2=request.POST['password2']
+        selected_department_id = request.POST.get('department')  # Get selected department ID
+        role = request.POST.get('role')
         if password == password2:
-            if User.objects.filter(email=email).exists():
+            if CustomUser.objects.filter(email=email).exists():
                 messages.info(request, 'Email already used')
                 return redirect('register')
-            elif User.objects.filter(username=username).exists():
+            elif CustomUser.objects.filter(username=username).exists():
                 messages.info(request,'Username already used')
                 return redirect('register')
+            elif not selected_department_id:
+                messages.info(request, 'Please select a department')
+                return redirect('register')
             else:
-                user = User.objects.create_user(username=username,email=email, password=password)
+                department = Department.objects.get(pk=selected_department_id)
+                user = CustomUser.objects.create_user(username=username,email=email, password=password)
+                user.department=department.name
+                user.role= role
                 user.save()
-                return redirect('login')
-
+                return redirect('index')
         else: 
-
             messages.info(request, 'Password not the same')
             return redirect('register')
     else:
-        return render(request,'register.html')
+        context = {
+            'department_options': Department.objects.all(),  # Fetch all departments
+        }
+        return render(request,'register.html',context)
 
 
  
@@ -155,3 +148,11 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return redirect('/')
+
+
+# Create your views here.
+# def login(request):
+#     return render(request,'login.html')
+
+# def dashboard(request):
+#     return render(request, 'dashboard.html')
