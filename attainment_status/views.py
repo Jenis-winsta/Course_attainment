@@ -1,21 +1,33 @@
-# from django.shortcuts import render
+from django.shortcuts import render
+from django.contrib import messages
+from .resources import DataResource
+from tablib import Dataset
+from .models import Data
 
-# # Create your views here.
-# from django.shortcuts import render
-# import openpyxl
-# from openpyxl import load_workbook
-# from .models import Product
+def simple_upload(request):
+    if request.method == 'POST':
+        data_resource = DataResource()
+        dataset = Dataset()
+        new_data = request.FILES['myFile']
 
-# def import_from_excel(request):
-#     if request.method == 'POST':
-#         excel_file = request.FILES['excel_file']
-#         wb = load_workbook(excel_file)
-#         ws = wb.active
+        if not new_data.name.endswith('xlsx'):
+            messages.error(request, 'Wrong format')
+            return render(request, 'upload.html')
 
-#         for row in ws.iter_rows(min_row=2, values_only=True):
-#             name, price, quantity = row
-#             Product.objects.create(name=name, price=price, quantity=quantity)
+        imported_data = dataset.load(new_data.read(), format='xlsx')
+        
+        # Skip the first row (headers) and iterate over the rest
+        for data in imported_data[1:]:
+            try:
+                value = Data.objects.create(
+                    name=data[1],
+                    cia_marks=data[2],
+                    ese_marks=data[3],
+                    total_marks=data[4],
+                )
+                value.save()
+            except IndexError:
+                # Handle any index errors gracefully
+                pass
 
-#         return render(request, 'import_success.html')
-
-#     return render(request, 'import_form.html')
+    return render(request, 'upload.html') 
