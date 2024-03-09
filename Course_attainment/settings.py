@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'users',
     'techapp',
     'attainment_status',
+    'charts',
+    'import_export',
 ]
 
 MIDDLEWARE = [
