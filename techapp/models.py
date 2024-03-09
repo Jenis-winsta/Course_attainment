@@ -20,6 +20,7 @@ class Programme(models.Model):
     name = models.CharField(max_length=50, unique=True)  
     def __str__(self):
         return f'{self.name}'
+
 class Programme_Outcome(models.Model):
     code = models.CharField(max_length=5)
     description = models.TextField(unique=True)
@@ -33,6 +34,7 @@ class Programme_Specific(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     def __str__(self):
         return f'{self.department}'
+
 class Programme_Specific_Outcome(models.Model):
     code = models.CharField(max_length=6)
     description = models.TextField(unique=True)

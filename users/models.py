@@ -1,13 +1,13 @@
 from django.db import models
 
 # Create your models here.
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext as _
 
 from .managers import CustomUserManager
 
-class CustomUser(AbstractUser):
+class CustomUser(AbstractUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     role = models.CharField(_('role'), max_length=100, blank=True, null=True)
     department = models.CharField(_('department'), max_length=100, blank=True, null=True)
