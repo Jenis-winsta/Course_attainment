@@ -14,6 +14,6 @@ urlpatterns=[
     path('ajax/load-courses/', views.load_courses, name='ajax_load_courses'),
     
     # path('get_years/', views.get_years, name='get_years'),
-    # path('dashboard',views.dashboard,name='dashboard'),
+    path('dashboard',views.dashboard,name='dashboard'),
 
 ]

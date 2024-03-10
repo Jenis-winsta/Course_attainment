@@ -16,7 +16,8 @@ from django.contrib import messages
 from django.conf import settings
 from django.shortcuts import redirect
 from users.models import CustomUser
-
+from .models import Department
+from django.contrib.auth.models import Group
 
 def index(request):
     if not request.user.is_authenticated:
@@ -97,6 +98,7 @@ def register(request):
         password2=request.POST['password2']
         selected_department_id = request.POST.get('department')  # Get selected department ID
         role = request.POST.get('role')
+        
         if password == password2:
             if CustomUser.objects.filter(email=email).exists():
                 messages.info(request, 'Email already used')
@@ -112,7 +114,16 @@ def register(request):
                 user = CustomUser.objects.create_user(username=username,email=email, password=password)
                 user.department=department.name
                 user.role= role
+                user.user_type=role
                 user.save()
+
+                 # Add the user to the group with name '1'
+                # group_name = '1'
+                group_name = user.user_type
+                group, created = Group.objects.get_or_create(name=group_name)
+                user.groups.add(group)
+
+                messages.success(request, 'Registration successful')
                 return redirect('index')
         else: 
             messages.info(request, 'Password not the same')
@@ -154,5 +165,5 @@ def logout(request):
 # def login(request):
 #     return render(request,'login.html')
 
-# def dashboard(request):
-#     return render(request, 'dashboard.html')
+def dashboard(request):
+    return render(request, 'dashboard.html')

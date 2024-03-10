@@ -1,10 +1,8 @@
 from django.db import models
-
 # Create your models here.
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext as _
-
 from .managers import CustomUserManager
 
 class CustomUser(AbstractUser, PermissionsMixin):
@@ -14,7 +12,6 @@ class CustomUser(AbstractUser, PermissionsMixin):
 
     user_type = models.CharField(max_length=20, choices=[('admin', 'Admin'), ('teacher', 'Teacher'), ('hod', 'HOD')], default='teacher')
 
-    
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ('email',)
