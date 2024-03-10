@@ -1,23 +1,16 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.models import Group
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
-import json
+from users.models import CustomUser
 from .models import *
 from .forms import *
-from django.contrib.admin.views.decorators import staff_member_required
 
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth.models import User, auth
-from django.contrib import messages
 
-from django.conf import settings
-from django.shortcuts import redirect
-from users.models import CustomUser
-from .models import Department
-from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
+
 
 def index(request):
     if not request.user.is_authenticated:
@@ -73,9 +66,7 @@ def load_courses(request):
     
     
     
-    
-
-
+# @login_required    
 def result(request):
     pso = Programme_Specific_Outcome.objects.all()
     co = Course_Outcome.objects.all()    
@@ -117,7 +108,7 @@ def register(request):
                 user.user_type=role
                 user.save()
 
-                 # Add the user to the group with name '1'
+                 # Add the user to the group with name user_type
                 # group_name = '1'
                 group_name = user.user_type
                 group, created = Group.objects.get_or_create(name=group_name)
@@ -148,6 +139,8 @@ def login(request):
 
         if user is not None:
             auth.login(request, user)
+            # next_url = request.GET.get('next', '/index')
+            # return redirect(next_url)
             return redirect('index')
         else:
             messages.info(request, 'Credential Invalid')
