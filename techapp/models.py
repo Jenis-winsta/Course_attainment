@@ -76,5 +76,5 @@ class Course_Outcome(models.Model):
     description = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)    
     def __str__(self):
-        return f'{self.code}, {self.course.department}'    
+        return f'{self.code}, {self.course.name}'    
 

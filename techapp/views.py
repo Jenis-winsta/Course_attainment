@@ -39,12 +39,7 @@ def maps(request):
     return render(request, 'maps.html', context)
 
 
-# def load_department(request):
-#     dept = Semester.objects.values('name').distinct().order_by('name')
-#     context={
-#         'dept':dept
-#     }
-#     return render(request, '')
+
 
 
 
@@ -68,9 +63,21 @@ def load_courses(request):
     
 # @login_required    
 def result(request):
-    pso = Programme_Specific_Outcome.objects.all()
-    co = Course_Outcome.objects.all()    
-    
+    # course_id = 1
+    course_id=request.POST.get('courses')
+    # course_code = "SITS0201"
+    # Get the Course object based on the ID or code
+    course = Course.objects.get(id=course_id)
+    # course = Course.objects.get(course_code=course_code)
+
+    # Retrieve the associated department for the course
+    department = course.department
+
+    # Filter Programme_Specific_Outcome objects based on the related Department
+    pso = Programme_Specific_Outcome.objects.filter(department=department)
+
+    # Retrieve Course_Outcome objects for the specific course
+    co = course.course_outcome_set.all()
     context = {
         'program_specific_outcomes': pso,
         'course_outcomes': co,                
@@ -160,3 +167,12 @@ def logout(request):
 
 def dashboard(request):
     return render(request, 'dashboard.html')
+
+
+
+# def load_department(request):
+#     dept = Semester.objects.values('name').distinct().order_by('name')
+#     context={
+#         'dept':dept
+#     }
+#     return render(request, '')
