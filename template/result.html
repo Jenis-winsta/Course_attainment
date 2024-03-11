@@ -73,27 +73,42 @@
                         </table>
                     </div>
 
-                    <!-- Open PO Window Button -->
-                    <button id="openPOButton" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
-        
-                    <!-- Open CO Window Button -->
-                    <button id="openCOButton" onclick="openCOWindow('{{ course_name }}', '{{ course_id }}')">Open CO Window</button>
-    
+                    <div class="row mt-3">
+                        <div class="col-md-2 mb-2">
+                          <!-- Open PSO Window Button -->
+                          <button id="openPSOButton" class="btn btn-primary btn-block px-3" onclick="openPSOWindow('{{ course_name }}', '{{ course_id }}')">Open PSO Window</button>
+                        </div>
+                        <div class="col-md-2">
+                          <!-- Open CO Window Button -->
+                          <button id="openCOButton" class="btn btn-primary btn-block px-3" onclick="openCOWindow('{{ course_name }}', '{{ course_id }}')">Open CO Window</button>
+                        </div>
+                        <div class="col-md-2">
+                            <!-- Open CO Window Button -->
+                            <button id="openPOButton" class="btn btn-primary btn-block px-3" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
+                          </div>
+                      </div>
+                    
                 </div>
             </div>
         
         
             <script>
-                // Function to open PO Window
-                function openPOWindow(courseName, courseId) {
-                    var url = "{% url 'po' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
-                    window.open(url, "_blank", "width=600,height=400");
+                // Function to open PSO Window
+                function openPSOWindow(courseName, courseId) {
+                    var url = "{% url 'pso' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
+                    window.open(url, "_blank", "width=800,height=600");
                 }
             
                 // Function to open CO Window
                 function openCOWindow(courseName, courseId) {
                     var url = "{% url 'co' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
-                    window.open(url, "_blank", "width=600,height=400");
+                    window.open(url, "_blank", "width=800,height=600");
+                }
+
+                // Function to open PO Window
+                function openPOWindow(courseName, courseId) {
+                    var url = "{% url 'po' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
+                    window.open(url, "_blank", "width=800,height=600");
                 }
             </script>
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>

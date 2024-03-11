@@ -1,33 +1,59 @@
-<h2>Winsta</h2>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CO Window</title>
-</head>
-<body>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  </head>
+  <body>
     <h2>CO Window</h2>
-
     <script>
-        // Function to get URL parameters
-        function getParameterByName(name, url) {
-            if (!url) url = window.location.href;
-            name = name.replace(/[\[\]]/g, '\\$&');
-            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
-        }
+      // Function to get URL parameters
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return "";
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
 
-        // Get course name and ID from the URL
-        var courseName = getParameterByName('course_name');
-        var courseId = getParameterByName('course_id');
+      // Get course name and ID from the URL
+      var courseName = getParameterByName("course_name");
+    //   var courseId = getParameterByName("course_id");
 
-        // Display the data in the HTML
-        document.body.innerHTML += '<p>Course Name: ' + courseName + '</p>';
-        document.body.innerHTML += '<p>Course ID: ' + courseId + '</p>';
+      // Display the data in the HTML
+      document.body.innerHTML += "<p>Course Name: " + courseName + "</p>";
+      document.body.innerHTML += "<p>Course ID: " + courseId + "</p>";
+
+      // Make an AJAX request to fetch course outcomes based on course_id
+      $.ajax({
+        url: "/get_course_outcomes/" + courseId + "/",
+        type: "GET",
+        dataType: "json",
+        success: function (courseOutcomes) {
+          displayCourseOutcomes(courseOutcomes);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error fetching course outcomes:", status, error);
+        },
+      });
+
+      // Function to display course outcomes
+      function displayCourseOutcomes(courseOutcomes) {
+        var outcomesList = $("<ul></ul>");
+
+        $.each(courseOutcomes, function (index, outcome) {
+          var listItem = $("<li></li>").html(
+            outcome.code + " : &nbsp;" + outcome.description+"<br><br> "
+          );
+          outcomesList.append(listItem);
+        });
+
+        $("body").append(outcomesList);
+      }
     </script>
-</body>
+  </body>
 </html>

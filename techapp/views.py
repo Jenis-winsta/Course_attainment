@@ -12,11 +12,16 @@ from .forms import *
 from django.contrib.auth.decorators import login_required
 
 
+def pso(request):
+    return render(request, 'po/pso.html')
+
 def po(request):
     return render(request, 'po/po.html')
 
 def co(request):
     return render(request, 'po/co.html')
+
+
 
 
 
@@ -29,9 +34,57 @@ def index(request):
         }) 
 
 
+def get_course_outcomes(request, course_id):
+    # Fetch Course_Outcome data based on course_id
+    course_outcomes = Course_Outcome.objects.filter(course_id=course_id)
+
+    # Convert data to a JSON response
+    data = [{'code': co.code, 'description': co.description} for co in course_outcomes]
+    return JsonResponse(data, safe=False)
 
 
-    
+def get_program_specific_outcomes(request, course_id):
+    try:
+        course = Course.objects.get(pk=course_id)
+        department_id = course.department_id
+        department_name = course.department.name
+        program_specific_outcomes = Programme_Specific_Outcome.objects.filter(department_id=department_id)
+
+        # Convert data to a JSON response
+        data = {
+            'course_name': course.name,
+            'course_id': course.id,
+            'department_name': department_name,
+            'program_specific_outcomes': [
+                {'code': pso.code, 'description': pso.description} for pso in program_specific_outcomes
+            ]
+        }
+        return JsonResponse(data, safe=False)
+
+    except Course.DoesNotExist:
+        return JsonResponse({'error': 'Course not found'}, status=404)
+
+
+def get_programme_outcomes(request, course_id):
+    try:
+        course = Course.objects.get(pk=course_id)
+        programme_id = course.programme_id
+        programme_outcomes = Programme_Outcome.objects.filter(programme_id=programme_id)
+
+        # Convert data to a JSON response
+        data = {
+            'course_name': course.name,
+            'course_id': course.id,
+            'programme_name': course.programme.name,
+            'programme_outcomes': [
+                {'code': po.code, 'description': po.description} for po in programme_outcomes
+            ]
+        }
+        return JsonResponse(data, safe=False)
+
+    except Course.DoesNotExist:
+        return JsonResponse({'error': 'Course not found'}, status=404)
+  
 def maps(request):
     years = Year.objects.values('id').distinct().order_by('id')
     semesters = Semester.objects.values('name').distinct().order_by('name')

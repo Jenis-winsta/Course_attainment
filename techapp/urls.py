@@ -12,10 +12,15 @@ urlpatterns=[
     path('result', views.result, name='result'),
     path('ajax/load-semesters/', views.load_semesters, name='ajax_load_semesters'),
     path('ajax/load-courses/', views.load_courses, name='ajax_load_courses'),
-    
+
     # path('get_years/', views.get_years, name='get_years'),
     path('dashboard',views.dashboard,name='dashboard'),
+    path('pso', views.pso, name='pso'),
     path('po', views.po, name='po'),
     path('co', views.co, name='co'),
+
+    path('get_course_outcomes/<int:course_id>/', views.get_course_outcomes, name='get_course_outcomes'),
+    path('get_program_specific_outcomes/<int:course_id>/', views.get_program_specific_outcomes, name='get_program_specific_outcomes'),
+    path('get_programme_outcomes/<int:course_id>/', views.get_programme_outcomes, name='get_programme_outcomes'),
 
 ]

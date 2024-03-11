@@ -67,6 +67,7 @@ class Course(models.Model):
     course_code = models.CharField(max_length=20)    
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     programme_specific = models.ForeignKey(Programme_Specific, on_delete=models.CASCADE)    
+    programme = models.ForeignKey(Programme, on_delete=models.CASCADE, default=1)    
     def __str__(self):
         return f'({self.course_code}) {self.name}'
         

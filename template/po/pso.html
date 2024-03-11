@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PO Window</title>
+    <title>PSO Window</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   </head>
   <body>
-    <h2>PO Window</h2>
+    <h2>PSO Window</h2>
 
     <script>
       // Function to get URL parameters
@@ -22,40 +22,42 @@
       }
 
       // Get course name and ID from the URL
-      // Get course name and ID from the URL
-      // Get course name and ID from the URL
       var courseName = getParameterByName("course_name");
       var courseId = getParameterByName("course_id");
 
       // Display the data in the HTML
       document.body.innerHTML += "<p>Course Name: " + courseName + "</p>";
-      //   document.body.innerHTML += "<p>Course ID: " + courseId + "</p>";
+    //   document.body.innerHTML += "<p>Course ID: " + courseId + "</p>";
 
-      // Make an AJAX request to fetch programme outcomes based on course_id
+      // Make an AJAX request to fetch program-specific outcomes based on course_id
       $.ajax({
-        url: "/get_programme_outcomes/" + courseId + "/",
+        url: "/get_program_specific_outcomes/" + courseId + "/",
         type: "GET",
         dataType: "json",
         success: function (data) {
-          // Display programme name
+          // Display department information
           document.body.innerHTML +=
-            "<p>Programme: " + data.programme_name + "</p>";
+            "<p>Department: " + data.department_name + "</p>";
 
-          // Display programme outcomes
-          displayProgrammeOutcomes(data.programme_outcomes);
+          // Display program-specific outcomes
+          displayProgramSpecificOutcomes(data.program_specific_outcomes);
         },
         error: function (xhr, status, error) {
-          console.error("Error fetching programme outcomes:", status, error);
+          console.error(
+            "Error fetching program-specific outcomes:",
+            status,
+            error
+          );
         },
       });
 
-      // Function to display programme outcomes
-      function displayProgrammeOutcomes(programmeOutcomes) {
+      // Function to display program-specific outcomes
+      function displayProgramSpecificOutcomes(programSpecificOutcomes) {
         var outcomesList = $("<ul></ul>");
 
-        $.each(programmeOutcomes, function (index, po) {
+        $.each(programSpecificOutcomes, function (index, pso) {
           var listItem = $("<li></li>").html(
-            po.code + " : &nbsp;" + po.description + "<br><br> "
+            pso.code + " : &nbsp;" + pso.description + "<br><br> "
           );
           outcomesList.append(listItem);
         });
