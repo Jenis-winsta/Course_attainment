@@ -12,6 +12,14 @@ from .forms import *
 from django.contrib.auth.decorators import login_required
 
 
+def po(request):
+    return render(request, 'po/po.html')
+
+def co(request):
+    return render(request, 'po/co.html')
+
+
+
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -68,6 +76,7 @@ def result(request):
     # course_code = "SITS0201"
     # Get the Course object based on the ID or code
     course = Course.objects.get(id=course_id)
+    course_name=course.name
     # course = Course.objects.get(course_code=course_code)
 
     # Retrieve the associated department for the course
@@ -80,7 +89,9 @@ def result(request):
     co = course.course_outcome_set.all()
     context = {
         'program_specific_outcomes': pso,
-        'course_outcomes': co,                
+        'course_outcomes': co, 
+        'course_name':course, 
+        'course_id':course_id             
     }
     return render(request, 'result.html', context)
 

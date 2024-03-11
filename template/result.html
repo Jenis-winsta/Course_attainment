@@ -40,41 +40,62 @@
 
         <!-- Sidebar -->
         {% include 'PurpleTemplate/partials/_sidebar.html' %}
-        <div class="main-panel">
-
-            <div class="content-wrapper">
-
-                <div class="table-responsive-sm table-responsive-md">
-                    <h2>Table with PSO and CO</h2>
-
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                {% for pso in program_specific_outcomes %}
-                                <th> {{ pso.code }}</th>
+        
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="table-responsive-sm table-responsive-md">
+                        <h2>Table with PSO and CO</h2>
+                        <h4>Course: {{course_name}}</h4>
+        
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    {% for pso in program_specific_outcomes %}
+                                    <th>{{ pso.code }}</th>
+                                    {% endfor %}
+                                    <!-- Add more CO columns if needed -->
+                                </tr>
+                            </thead>
+        
+                            <tbody>
+                                {% for co in course_outcomes %}
+                                <tr>
+                                    <td>{{ co.code }}</td>
+                                    {% for pso in program_specific_outcomes %}
+                                    <td>
+                                        <input type="checkbox" name="checkbox_{{ co.id }}_{{ pso.id }}">
+                                    </td>
+                                    {% endfor %}
+                                </tr>
                                 {% endfor %}
-                                <!-- Add more CO columns if needed -->
-                            </tr>
-                        </thead>
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <tbody>
-                            {% for co in course_outcomes %}
-                            <tr>
-                                <td>{{ co.code }}</td>
-                                {% for pso in program_specific_outcomes %}
-                                <td>
-                                    <input type="checkbox" name="checkbox_{{ co.id }}_{{ pso.id }}">
-                                </td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <!-- Open PO Window Button -->
+                    <button id="openPOButton" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
+        
+                    <!-- Open CO Window Button -->
+                    <button id="openCOButton" onclick="openCOWindow('{{ course_name }}', '{{ course_id }}')">Open CO Window</button>
+    
                 </div>
             </div>
-        </div>
-    </div>
+        
+        
+            <script>
+                // Function to open PO Window
+                function openPOWindow(courseName, courseId) {
+                    var url = "{% url 'po' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
+                    window.open(url, "_blank", "width=600,height=400");
+                }
+            
+                // Function to open CO Window
+                function openCOWindow(courseName, courseId) {
+                    var url = "{% url 'co' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
+                    window.open(url, "_blank", "width=600,height=400");
+                }
+            </script>
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->
@@ -90,6 +111,7 @@
     <script src="{% static 'assets/js/dashboard.js' %}"></script>
     <script src="{% static 'assets/js/todolist.js' %}"></script>
     <!-- End custom js for this page -->
+    
 </body>
 
 </html>

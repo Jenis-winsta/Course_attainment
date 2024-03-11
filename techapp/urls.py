@@ -15,5 +15,7 @@ urlpatterns=[
     
     # path('get_years/', views.get_years, name='get_years'),
     path('dashboard',views.dashboard,name='dashboard'),
+    path('po', views.po, name='po'),
+    path('co', views.co, name='co'),
 
 ]
