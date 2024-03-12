@@ -43,7 +43,7 @@
         
             <div class="main-panel">
                 <div class="content-wrapper">
-                    <div class="table-responsive-sm table-responsive-md">
+                    <div class="table-responsive">
                         <h2>Table with PSO and CO</h2>
                         <h4>Course: {{course_name}}</h4>
         
@@ -74,15 +74,15 @@
                     </div>
 
                     <div class="row mt-3">
-                        <div class="col-md-2 mb-2">
+                        <div class="col-md-3 mb-2">
                           <!-- Open PSO Window Button -->
                           <button id="openPSOButton" class="btn btn-primary btn-block px-3" onclick="openPSOWindow('{{ course_name }}', '{{ course_id }}')">Open PSO Window</button>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3 mb-2">
                           <!-- Open CO Window Button -->
                           <button id="openCOButton" class="btn btn-primary btn-block px-3" onclick="openCOWindow('{{ course_name }}', '{{ course_id }}')">Open CO Window</button>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <!-- Open CO Window Button -->
                             <button id="openPOButton" class="btn btn-primary btn-block px-3" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
                           </div>

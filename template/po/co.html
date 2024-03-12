@@ -22,11 +22,11 @@
 
       // Get course name and ID from the URL
       var courseName = getParameterByName("course_name");
-    //   var courseId = getParameterByName("course_id");
+      var courseId = getParameterByName("course_id");
 
       // Display the data in the HTML
       document.body.innerHTML += "<p>Course Name: " + courseName + "</p>";
-      document.body.innerHTML += "<p>Course ID: " + courseId + "</p>";
+      // document.body.innerHTML += "<p>Course ID: " + courseId + "</p>";
 
       // Make an AJAX request to fetch course outcomes based on course_id
       $.ajax({
