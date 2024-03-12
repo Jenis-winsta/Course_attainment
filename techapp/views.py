@@ -13,13 +13,13 @@ from django.contrib.auth.decorators import login_required
 
 
 def pso(request):
-    return render(request, 'po/pso.html')
+    return render(request, 'map/pso.html')
 
 def po(request):
-    return render(request, 'po/po.html')
+    return render(request, 'map/po.html')
 
 def co(request):
-    return render(request, 'po/co.html')
+    return render(request, 'map/co.html')
 
 
 
@@ -145,12 +145,11 @@ def load_courses(request):
     
 # @login_required    
 def result(request):
+    dec=request.POST.get('display')
     course_id = request.POST.get('courses')
-
     # Get the Course object based on the ID
     course = Course.objects.get(id=course_id)
     course_name = course.name
-
     # Retrieve the associated department for the course
     department = course.department
 
@@ -175,7 +174,6 @@ def result(request):
         'course_id': course_id,
     }
     return render(request, 'result.html', context)
-
 
 
 
