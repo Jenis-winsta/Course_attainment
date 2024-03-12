@@ -23,4 +23,7 @@ urlpatterns=[
     path('get_program_specific_outcomes/<int:course_id>/', views.get_program_specific_outcomes, name='get_program_specific_outcomes'),
     path('get_programme_outcomes/<int:course_id>/', views.get_programme_outcomes, name='get_programme_outcomes'),
 
+    path('save_results/', views.save_results, name='save_results'),
+    path('success_page', views.success_page, name='success_page')
+
 ]

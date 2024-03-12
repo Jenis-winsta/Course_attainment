@@ -75,7 +75,8 @@ class Course(models.Model):
 class Course_Outcome(models.Model):
     code = models.CharField(max_length=5)
     description = models.TextField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)    
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)   
+    programme_specific_outcomes = models.ManyToManyField(Programme_Specific_Outcome) 
     def __str__(self):
         return f'{self.code}, {self.course.name}'    
 

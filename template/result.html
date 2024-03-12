@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load custom_filters %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -26,6 +26,20 @@
         #signout:hover {
             color: blueviolet;
         }
+        .custom-checkbox {
+            color: #8a2be2; /* Purple color */
+        }
+
+        .custom-checkbox:checked {
+            background-color: #8a2be2; /* Purple color when checked */
+            border-color: #8a2be2; /* Purple border color when checked */
+        }
+
+        .custom-checkbox:disabled {
+            background-color: #8a2be2; /* Purple background color for disabled */
+            border-color: #8a2be2; /* Purple border color for disabled */
+            color: #777; /* Disabled text color */
+        }
     </style>
 </head>
 
@@ -43,6 +57,8 @@
         
             <div class="main-panel">
                 <div class="content-wrapper">
+                    <form method="post" action="{% url 'save_results' %}">
+                        {% csrf_token %}
                     <div class="table-responsive">
                         <h2>Table with PSO and CO</h2>
                         <h4>Course: {{course_name}}</h4>
@@ -64,7 +80,11 @@
                                     <td>{{ co.code }}</td>
                                     {% for pso in program_specific_outcomes %}
                                     <td>
-                                        <input type="checkbox" name="checkbox_{{ co.id }}_{{ pso.id }}">
+                                        {% if pso.id in pso_co_connections|get_co_pso_ids:co.id %}
+                                            <input type="checkbox" name="checkbox_{{ co.id }}_{{ pso.id }}" class="form-check-input custom-checkbox" id="purpleCheckbox" disabled checked>
+                                        {% else %}
+                                            <input type="checkbox" name="checkbox_{{ co.id }}_{{ pso.id }}" disabled>
+                                        {% endif %}
                                     </td>
                                     {% endfor %}
                                 </tr>
@@ -87,10 +107,14 @@
                             <button id="openPOButton" class="btn btn-primary btn-block px-3" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
                           </div>
                       </div>
+                      <!-- <button type="submit">Save Results</button> -->
+                    </form>
+
                     
                 </div>
             </div>
         
+            
         
             <script>
                 // Function to open PSO Window

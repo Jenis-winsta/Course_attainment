@@ -85,6 +85,27 @@ def get_programme_outcomes(request, course_id):
     except Course.DoesNotExist:
         return JsonResponse({'error': 'Course not found'}, status=404)
   
+
+def save_results(request):
+    if request.method == 'POST':
+        for co in Course_Outcome.objects.all():
+            for pso in Programme_Specific_Outcome.objects.all():
+                checkbox_name = f"checkbox_{co.id}_{pso.id}"
+                if checkbox_name in request.POST:
+                    # Checkbox is checked, associate CO with PSO
+                    co.programme_specific_outcomes.add(pso)
+                else:
+                    # Checkbox is not checked, disassociate CO from PSO
+                    co.programme_specific_outcomes.remove(pso)
+        return redirect('success_page')  # Redirect to a success page after saving results
+    return render(request, 'result.html')
+
+
+def success_page(request):
+    return render(request, 'success.html')
+
+
+
 def maps(request):
     years = Year.objects.values('id').distinct().order_by('id')
     semesters = Semester.objects.values('name').distinct().order_by('name')
@@ -124,13 +145,11 @@ def load_courses(request):
     
 # @login_required    
 def result(request):
-    # course_id = 1
-    course_id=request.POST.get('courses')
-    # course_code = "SITS0201"
-    # Get the Course object based on the ID or code
+    course_id = request.POST.get('courses')
+
+    # Get the Course object based on the ID
     course = Course.objects.get(id=course_id)
-    course_name=course.name
-    # course = Course.objects.get(course_code=course_code)
+    course_name = course.name
 
     # Retrieve the associated department for the course
     department = course.department
@@ -140,13 +159,25 @@ def result(request):
 
     # Retrieve Course_Outcome objects for the specific course
     co = course.course_outcome_set.all()
+
+    # Fetch the PSO-CO connections for each CO
+    pso_co_connections = []
+
+    for outcome in co:
+        connected_pso_ids = outcome.programme_specific_outcomes.values_list('id', flat=True)
+        pso_co_connections.append((outcome.id, connected_pso_ids))
+
     context = {
         'program_specific_outcomes': pso,
-        'course_outcomes': co, 
-        'course_name':course, 
-        'course_id':course_id             
+        'course_outcomes': co,
+        'pso_co_connections': pso_co_connections,
+        'course_name': course_name,
+        'course_id': course_id,
     }
     return render(request, 'result.html', context)
+
+
+
 
 
 
