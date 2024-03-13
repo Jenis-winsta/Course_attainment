@@ -1,19 +1,16 @@
+<!-- upload.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Students Data</title>
+    <title>Upload Excel File</title>
 </head>
 <body>
-    <h1>Upload Students Data</h1>
+    <h1>Upload Excel File</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="myfile" accept=".xlsx">
+        {{ form.as_p }}
         <button type="submit">Upload</button>
     </form>
-    {% for message in messages %}
-        <div>{{ message }}</div>
-    {% endfor %}
 </body>
 </html>

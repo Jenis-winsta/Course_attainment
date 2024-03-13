@@ -1,7 +1,5 @@
 from django import forms
 from .models import Student
 
-class StudentData(forms.Form):
-	class meta:
-		model = Student
-		fields = '__all__'
+class UploadFileForm(forms.Form):
+    file= forms.FileField(label='Select an Excel file')
