@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     # Local apps
     'users',
     'techapp',
-    'attainment_status',
     'charts',
     'import_export',
 ]
