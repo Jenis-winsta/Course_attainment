@@ -56,7 +56,7 @@
         
             <div class="main-panel">
                 <div class="content-wrapper">
-                    <form method="post" action="{% url 'save_results' %}">
+                    <form method="post" action="{% url 'save_results' %}" id="saveForm">
                         {% csrf_token %}
                     <div class="table-responsive">
                         <h2>Table with PSO and CO</h2>
@@ -106,11 +106,11 @@
                             <button id="openPOButton" class="btn btn-primary btn-block px-3" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
                         </div>
                         <div class="col-md-3">
-                            <button type="button" id="editButton" class="btn btn-primary btn-block px-6">Edit</button>
+                            <button type="button" id="editSaveButton" class="btn btn-primary btn-block px-3" onclick="toggleEditMode()">Edit</button>
                         </div>
                       </div>
                       
-                      <button type="submit">Save Results</button>
+                      <!-- <button type="submit">Save Results</button> -->
                     </form>
 
                     
@@ -120,7 +120,42 @@
             
         
             <script>
-                // Function to open PSO Window
+                function toggleEditMode() {
+                    var button = $('#editSaveButton');
+                    if (button.text() === 'Edit') {
+                        // Change button text to Save
+                        button.text('Save');
+                        // Enable checkboxes
+                        $('input[type="checkbox"]').prop('disabled', false);
+                    } else {
+                        // Change button text to Edit
+                        button.text('Edit');
+                        // Disable checkboxes
+                        // $('input[type="checkbox"]').prop('disabled', true);
+                        // Call function to save data
+                        // saveData();
+                        $('#saveForm').submit();  // This submits the form
+                    }
+                }
+
+                // function saveData() {
+                //     // Your AJAX call to save data
+                //     $.ajax({
+                //         url: '/save_data/',
+                //         method: 'POST',
+                //         data: $('#saveForm').serialize( ),  // Serialize form data
+                //         success: function(response) {
+                //             // Show success message
+                //             alert('Data saved successfully.');
+                //         },
+                //         error: function(xhr, status, error) {
+                //             // Handle error
+                //             console.error(error);
+                //         }
+                //     });
+                // }
+
+
                 function openPSOWindow(courseName, courseId) {
                     var url = "{% url 'pso' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
                     window.open(url, "_blank", "width=800,height=600");
@@ -137,21 +172,6 @@
                     var url = "{% url 'po' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
                     window.open(url, "_blank", "width=800,height=600");
                 }
-
-                // Function to handle checkbox editing
-                function handleCheckboxEditing() {
-                    // Enable all checkboxes
-                    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    // Toggle the disabled attribute for each checkbox
-                    checkboxes.forEach(function(checkbox) {
-                        checkbox.disabled = !checkbox.disabled;
-                    });
-                }
-
-                // Add event listener to the Edit button
-                document.getElementById('editButton').addEventListener('click', function() {
-                    handleCheckboxEditing();
-                });
             </script>
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <!-- endinject -->
