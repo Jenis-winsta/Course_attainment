@@ -110,14 +110,7 @@ def save_results(request):
 
 
 
-
-      
-
-
-
 def save_data(request):
-    print("save_data in veiws")
-    print(request.POST)
     if request.method == 'POST':
         for key in request.POST:
             parts = key.split('_')
