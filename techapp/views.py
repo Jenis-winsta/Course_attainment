@@ -111,34 +111,8 @@ def save_results(request):
 
 
 
+      
 
-# def save_data(request):
-#     if request.method == 'POST':
-#         print(request.POST)
-#         for key in request.POST:
-#             # Split the key by underscores and retrieve the first element
-#             parts = key.split('_')
-#             # print(parts)
-#             if len(parts) > 1:
-#                 course_id = parts[1]  # The course ID is the second element
-#                 # print("Course ID:", course_id)
-        
-#         print(course_id)
-#         for course in Course.objects.all():
-#             for co in Course_Outcome.objects.filter(course=course):
-#                 for po in Programme_Outcome.objects.all():
-#                     checkbox_name = f"checkbox_{course.id}_{co.id}_{po.id}"
-#                     if course.id==course_id:
-#                         if checkbox_name in request.POST:
-#                             # Checkbox is checked, associate CO with PO for the course
-#                             print(checkbox_name)
-#                             co.programme_outcomes.add(po)
-#                         else:
-#                             # Checkbox is not checked, disassociate CO from PO for the course
-#                             co.programme_outcomes.remove(po)
-
-#         return HttpResponse("Data saved successfully.")  # Send a success response
-#     return render(request, 'po_co_map.html')
 
 
 def save_data(request):
