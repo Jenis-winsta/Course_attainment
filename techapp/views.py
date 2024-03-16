@@ -147,15 +147,17 @@ def maps(request):
     semesters = Semester.objects.values('name').distinct().order_by('name')
     courses = Course.objects.values('name').distinct()      
     code = Course.objects.values('course_code').distinct()  
+    departments = Department.objects.all()
+
 
     context = {
         'years': years,
         'semesters': semesters,
         'courses': courses,
-        'code': code
+        'code': code,
+        'departments': departments,
     }
     return render(request, 'maps.html', context)
-
 
 
 
@@ -172,10 +174,12 @@ def load_semesters(request):
     return JsonResponse({'semesters': semesters_json})
 
 def load_courses(request):
+    department_id = request.GET.get('department')  # Get the selected department ID
     semester_id = request.GET.get('semester')
-    courses = Course.objects.filter(semester_id=semester_id)
+    courses = Course.objects.filter(semester_id=semester_id, department_id=department_id)  # Filter courses by department
     courses_json = list(courses.values())
     return JsonResponse({'courses': courses_json})
+
     
     
     

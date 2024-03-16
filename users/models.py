@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext as _
 from .managers import CustomUserManager
+from techapp.models import Department  # Import Department model from techapp
+
 
 class CustomUser(AbstractUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
