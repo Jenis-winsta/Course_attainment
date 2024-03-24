@@ -38,5 +38,16 @@
         <i class="mdi mdi-checkbox-marked menu-icon"></i>
       </a>
     </li>
+    {% if user.role != 'teacher' %}
+    <!-- Render additional tab for users other than teachers -->
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'assign_course' %}">      
+        <span class="menu-title">Assign Course</span>
+        <i class="mdi mdi-plus menu-icon"></i>
+      </a>
+    </li>
+    {% endif %}
+
+
   </ul>
 </nav>

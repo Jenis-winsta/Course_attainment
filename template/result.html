@@ -1,6 +1,6 @@
 {% load static %}
 {% load custom_filters %}
-
+<!-- This page is not rendered-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,11 +57,12 @@
         
             <div class="main-panel">
                 <div class="content-wrapper">
-                    <form method="post" action="{% url 'save_results' %}">
+                    <form method="post" action="{% url 'report_page' %}">
                         {% csrf_token %}
                     <div class="table-responsive">
                         <h2>Table with PSO and CO</h2>
-                        <h4>Course: {{course_name}}</h4>
+                        <h4>Course: {{ course }} &nbsp;&nbsp;&nbsp;&nbsp; Course id: {{ course_id}}</h4>
+                        <input type="hidden" id="courseIdInput" name="course_id" value="{{ course_id }}">
         
                         <table class="table table-bordered">
                             <thead>

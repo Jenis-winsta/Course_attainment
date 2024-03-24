@@ -25,6 +25,14 @@ urlpatterns=[
 
     path('save_results/', views.save_results, name='save_results'),
     path('save_data/', views.save_data, name='save_data'),
-    path('success_page', views.success_page, name='success_page')
+    path('success_page', views.success_page, name='success_page'),
+    path('next_page', views.next_page, name='next_page'),
+
+
+    path('assign_course', views.assign_course, name='assign_course'),
+    path('ajax/load_teachers_hods/', views.load_teachers_hods, name='load_teachers_hods'),
+    path('ajax/update_course_assignment/', views.update_course_assignment, name='update_course_assignment')
+
+
 
 ]

@@ -128,7 +128,8 @@
                         {% csrf_token %}
                     <div class="table-responsive">
                         <h2>Table with PO and CO</h2>
-                        <h4>Course: {{course_name}}</h4>
+                        <h4>Course: {{course}}</h4>
+                        <!-- <input type="hidden" id="courseIdInput" name="input_course_id" value="{{ course_id }}"> -->
                         
                         <table class="table table-bordered">
                             <thead>
@@ -180,6 +181,15 @@
                         </div>
                         
                     </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <!-- Button to submit form and redirect -->
+                            <button type="button" id="nextPageButton" class="btn btn-primary btn-block px-3" onclick="submitFormAndRedirect('{{ course_id }}')">Report</button>
+                        </div>
+                    </div>
+
+
                     <!-- Add this div for displaying success message -->
                     <div id="successMessage"></div>
 
@@ -230,6 +240,15 @@
                 }
 
                 
+
+                function submitFormAndRedirect(courseId) {
+                    // Submit the form
+                    document.getElementById('saveForm').submit();
+                    
+                    // Redirect to the next page with the course_id
+                    window.location.href = "{% url 'next_page' %}?course_id=" + courseId;
+                }
+
 
               
                 // Function to open PSO Window

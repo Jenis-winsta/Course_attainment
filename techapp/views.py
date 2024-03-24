@@ -22,6 +22,84 @@ def co(request):
     return render(request, 'map/co.html')
 
 
+def assign_course(request):
+    # Retrieve all courses
+    courses = Course.objects.all()
+    
+
+    # Retrieve all teachers (users with user_type='teacher')
+    teachers = CustomUser.objects.filter(user_type='teacher')
+
+    # Retrieve all HODs (users with user_type='hod')
+    hods = CustomUser.objects.filter(user_type='hod')
+
+    context = {
+        'courses': courses,
+        'teachers': teachers,
+        'hods': hods,
+    }
+
+    return render(request, 'course_assignment/assign_course.html', context)
+
+# views.py
+
+# from django.http import JsonResponse
+# from django.shortcuts import get_object_or_404
+# from .models import CustomUser, Course
+
+def load_teachers_hods(request):
+    # Get the course_id from the GET parameters
+    course_id = request.POST.get('course_id')
+
+    # Check if course_id is provided
+    if course_id:
+        # Retrieve the course object or return a 404 error if not found
+        course = get_object_or_404(Course, id=course_id)
+        
+        # Retrieve the department ID from the course
+        department_id = course.department
+        
+        # Query for teachers or HODs based on the role and department
+        teachers_hods = CustomUser.objects.filter(
+            role__in=['teacher', 'hod'],
+            department=department_id
+        ).distinct()
+        
+        # Serialize the queryset to JSON format
+        teachers_hods_data = list(teachers_hods.values('id', 'username', 'role'))
+
+        return JsonResponse({'teachers_hods': teachers_hods_data})
+
+    # Return an empty response if course_id is missing
+    return JsonResponse({'error': 'Missing course_id'}, status=400)
+
+
+# from django.views.decorators.csrf import csrf_exempt
+# from .models import Course
+
+# @csrf_exempt  # Temporary measure for simplicity. You should handle CSRF properly in production.
+def update_course_assignment(request):
+    if request.method == 'POST':
+        # Retrieve course_id and assigned_to_id from POST data
+        course_id = request.POST.get('course_id')
+        assigned_to_id = request.POST.get('assigned_to_id')
+
+        try:
+            # Retrieve the Course object
+            course = Course.objects.get(id=course_id)
+
+            # Update the assigned_to field with the selected user ID
+            course.assigned_to_id = assigned_to_id
+            course.save()
+
+            return JsonResponse({'success': True})
+
+        except Course.DoesNotExist:
+            return JsonResponse({'error': 'Course not found'}, status=404)
+
+    # Handle invalid or unsupported request methods
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 
 
@@ -131,7 +209,7 @@ def save_data(request):
         return HttpResponse("Data saved successfully.")
         # messages.info(request,'data saved')
         # return redirect('maps')                           
-    return render(request, 'po_co_map.html')
+    return render(request, 'map/po_co_map.html')
 
 
 
@@ -195,6 +273,7 @@ def result(request):
     context = {
         'course_name': course_name,
         'course_id': course_id,
+        'course':course
     }
 
     if dec == 'pso_co':
@@ -229,13 +308,14 @@ def result(request):
         # Fetch Programme Outcomes based on Programme ID
         po = Programme_Outcome.objects.filter(programme_id=programme_id)
 
-        # Fetch PO-CO connections for each PO
+        # Fetch PO-CO connections for each CO
         po_co_connections = []
 
         for outcome in co:
             connected_po_ids = outcome.programme_outcomes.values_list('id', flat=True)
             po_co_connections.append((outcome.id, connected_po_ids))
 
+        # print(po_co_connections)
         context.update({
             'program_outcomes': po,
             'course_outcomes': co,
@@ -249,6 +329,56 @@ def result(request):
 
 
 
+
+
+def next_page(request):
+    # Get the course_id from the query parameters
+    course_id = request.GET.get('course_id')
+
+    # Fetch the course object based on the course_id
+    course = Course.objects.get(id=course_id)
+
+    department = course.department
+    programme_id = course.programme_id
+
+    # Retrieve related objects (course_outcomes, program_outcomes, program_specific_outcomes, department)
+    co = course.course_outcome_set.all()
+    po = Programme_Outcome.objects.filter(programme_id=programme_id)
+    pso = Programme_Specific_Outcome.objects.filter(department=department)
+
+    # Fetch PSO-CO connections for each CO
+    pso_co_connections = []
+
+    for outcome in co:
+        connected_pso_ids = outcome.programme_specific_outcomes.values_list('id', flat=True)
+        pso_co_connections.append((outcome.id, connected_pso_ids))
+
+    
+    # Fetch PO-CO connections for each CO
+    po_co_connections = []
+
+    for outcome in co:
+        connected_po_ids = outcome.programme_outcomes.values_list('id', flat=True)
+        po_co_connections.append((outcome.id, connected_po_ids))
+
+
+    # print(po_co_connections)
+    # print(pso_co_connections)
+    # print(pso)
+
+    # Pass the fetched data to the template context
+    context = {
+        'course': course,
+        'course_outcomes': co,
+        'program_outcomes': po,
+        'program_specific_outcomes': pso,
+        'department': department,
+        'pso_co_connections': pso_co_connections,
+        'po_co_connections': po_co_connections,
+    }
+
+    # Render the report.html template with the fetched data
+    return render(request, 'map/report.html', context)
 
 
 
