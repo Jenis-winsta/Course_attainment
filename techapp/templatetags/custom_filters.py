@@ -18,3 +18,7 @@ def get_co_po_ids(po_co_connections, co_id):
             return po_ids
     return []
 
+@register.filter(name='get_value')
+def get_value(dictionary, key):
+    return dictionary.get(key)
+

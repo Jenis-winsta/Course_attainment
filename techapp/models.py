@@ -59,6 +59,7 @@ class Semester(models.Model):
         return f'{self.name}'    
     
     
+
 class Course(models.Model):
     name = models.CharField(max_length=250)
     year = models.ForeignKey(Year, on_delete=models.CASCADE)
@@ -77,9 +78,24 @@ class Course(models.Model):
         related_name='assigned_courses'
     )
 
+    programme_outcomes = models.ManyToManyField(Programme_Outcome, through='Course_Programme_Outcome')
+
     def __str__(self):
         return f'({self.course_code}) {self.name}'
         
+
+class Course_Programme_Outcome(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    programme_outcome = models.ForeignKey(Programme_Outcome, on_delete=models.CASCADE)
+    strength = models.PositiveSmallIntegerField(default=1)  # Range of connection strength (1, 2, 3)
+
+    class Meta:
+        unique_together = ('course', 'programme_outcome')  # Ensures one course can be connected to a PO only once
+
+    def __str__(self):
+        return f'Course: {self.course.course_code}, {self.course.name},PO: {self.programme_outcome.code}, Strength: {self.strength}'
+
+
 
 class Course_Outcome(models.Model):
     code = models.CharField(max_length=5)

@@ -22,33 +22,59 @@ def co(request):
     return render(request, 'map/co.html')
 
 
+from django.db.models import Count
 def assign_course(request):
-    # Retrieve all courses
-    courses = Course.objects.all()
-    
+    user=request.user
+    department_name=user.department
+    courses_by_year = None
 
-    # Retrieve all teachers (users with user_type='teacher')
+    # Check if the user is an admin
+    if user.role == 'admin':
+        # Fetch all courses grouped by year
+        courses_by_year = (
+            Course.objects.values('year__name')
+            .annotate(courses=Count('id'))
+            .order_by('year__name')
+        )
+
+        # Fetch actual courses for each year group
+        for year_group in courses_by_year:
+            year_group['courses'] = Course.objects.filter(
+                year__name=year_group['year__name']
+            ).order_by('name')
+
+    else:
+        # Fetch courses based on the user's department
+        courses_by_year = (
+            Course.objects.filter(department__name=department_name)
+            .values('year__name')
+            .annotate(courses=Count('id'))
+            .order_by('year__name')
+        )
+        
+        # Fetch actual courses for each year group
+        for year_group in courses_by_year:
+            year_group['courses'] = Course.objects.filter(
+                department__name=department_name,
+                year__name=year_group['year__name']
+            ).order_by('name')
+    
     teachers = CustomUser.objects.filter(user_type='teacher')
 
-    # Retrieve all HODs (users with user_type='hod')
     hods = CustomUser.objects.filter(user_type='hod')
 
     context = {
-        'courses': courses,
+        # 'courses': courses,
+        'courses_by_year': courses_by_year,
         'teachers': teachers,
         'hods': hods,
     }
-
     return render(request, 'course_assignment/assign_course.html', context)
 
-# views.py
 
-# from django.http import JsonResponse
-# from django.shortcuts import get_object_or_404
-# from .models import CustomUser, Course
+
 
 def load_teachers_hods(request):
-    # Get the course_id from the GET parameters
     course_id = request.POST.get('course_id')
 
     # Check if course_id is provided
@@ -74,8 +100,7 @@ def load_teachers_hods(request):
     return JsonResponse({'error': 'Missing course_id'}, status=400)
 
 
-# from django.views.decorators.csrf import csrf_exempt
-# from .models import Course
+
 
 # @csrf_exempt  # Temporary measure for simplicity. You should handle CSRF properly in production.
 def update_course_assignment(request):
@@ -213,6 +238,32 @@ def save_data(request):
 
 
 
+def save_dropdown_data(request):
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            # Split the key to extract course ID and PO ID
+            parts = key.split('_')
+            if len(parts) == 3:
+                course_id, po_id = parts[1], parts[2]
+                try:
+                    if value == 'nd':
+                        # Delete existing Course_Programme_Outcome instance if value is 'nd'
+                        Course_Programme_Outcome.objects.filter(course_id=course_id, programme_outcome_id=po_id).delete()
+                    else:
+                        # Update or create Course_Programme_Outcome instance with new strength
+                        course_po_connection, created = Course_Programme_Outcome.objects.get_or_create(course_id=course_id, programme_outcome_id=po_id)
+                        course_po_connection.strength = value
+                        course_po_connection.save()
+                except Exception as e:
+                    # Handle any exceptions
+                    return JsonResponse({'error': str(e)}, status=400)
+        
+        return JsonResponse({'message': 'Dropdown data saved successfully.'})
+    else:
+        return JsonResponse({'message': 'GET request not supported.'}, status=405)
+
+
+
 
 
 def success_page(request):
@@ -276,7 +327,35 @@ def result(request):
         'course':course
     }
 
-    if dec == 'pso_co':
+    if dec =='po_course':
+        programme_id = course.programme_id
+        po = Programme_Outcome.objects.filter(programme_id=programme_id)
+        
+        # Fetch all courses
+        courses = Course.objects.all()
+
+        # Initialize a dictionary to store Programme Outcomes for each course
+        po_course_connections = {}
+
+        # Iterate over each course to fetch its associated Programme Outcomes
+        for course in courses:
+            # Fetch Course_Programme_Outcome instances associated with the course
+            connections = course.course_programme_outcome_set.all()
+            
+            # Store the Programme Outcomes along with strengths in the dictionary using course id as key
+            po_strengths = {connection.programme_outcome: connection.strength for connection in connections}
+            po_course_connections[course.id] = po_strengths
+
+        # print(po_course_connections)
+        # Pass the data to the template
+        context.update ({
+            'courses': courses,
+            'program_outcomes': po,
+            'po_course_connections': po_course_connections,
+        })
+
+        return render(request, 'map/po_course_map.html', context)
+    elif dec == 'pso_co':
         # Retrieve the associated department for the course
         department = course.department
 
