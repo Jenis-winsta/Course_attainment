@@ -11,3 +11,9 @@ python manage.py startapp <appname>
 python manage.py createsuperuser
 
 admin@example.com
+
+
+*git*
+git add .
+git commit -m ""
+git push origin  master-1
