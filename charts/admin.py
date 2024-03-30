@@ -1,11 +1,14 @@
-# admin.py
 from django.contrib import admin
-from .models import *
 from import_export.admin import ImportExportModelAdmin
+from .models import *
+from .forms import *
 
 
 @admin.register(Student)
 class StudentAdmin(ImportExportModelAdmin):
-    list_display = ('file_name', 'name', 'cia_marks', 'sem_marks', 'total_marks')
     
+    list_display = ( 'file_desc', 'name', 'cia_marks', 'semester_marks', 'total_marks',)
+    
+
+
 admin.site.register(File_Description)
