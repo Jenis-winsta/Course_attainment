@@ -14,6 +14,11 @@ admin@example.com
 
 
 *git*
+
+- before push do pull
+git pull origin master-1
+
+
 git add .
 git commit -m ""
 git push origin  master-1
