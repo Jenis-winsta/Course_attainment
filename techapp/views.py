@@ -328,11 +328,20 @@ def result(request):
     }
 
     if dec =='po_course':
+        user = request.user
         programme_id = course.programme_id
         po = Programme_Outcome.objects.filter(programme_id=programme_id)
         
         # Fetch all courses
-        courses = Course.objects.all()
+        #courses = Course.objects.all()
+
+        # Check if the user is an admin
+        if user.user_type == 'admin':
+            # If admin, select all courses
+            courses = Course.objects.all()
+        else:
+            # If not admin, select courses based on the user's department
+            courses = Course.objects.filter(department=course.department)
 
         # Initialize a dictionary to store Programme Outcomes for each course
         po_course_connections = {}
