@@ -1,32 +1,23 @@
-<!-- visualize_student_scores.html -->
+<!-- visualization_scores.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Scores Visualization</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Visualization Page</title>
 </head>
 <body>
-    <h1>Visualize Student Scores</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="year">Select Year:</label>
-        <select name="year" id="year">
-            {% for year in years %}
-                <option value="{{ year }}">{{ year }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Submit</button>
-        <button type="submit" name="compare_all" value="true">Compare All Data</button>
-    </form>
-    {% if individual_graph %}
-        <h2>Individual Year's Graph</h2>
-        <div id="individual_graph">{{ individual_graph|safe }}</div>
-    {% endif %}
-    {% if trend_graph %}
-        <h2>Trend Comparison Graph</h2>
-        <div id="trend_graph">{{ trend_graph|safe }}</div>
-    {% endif %}
+    <h1>Visualization Page</h1>
+    <h2>Individual Graphs</h2>
+    {% for year, individual_graph_html in individual_graphs.items %}
+        <h3>{{ year }}</h3>
+        <div>{{ individual_graph_html | safe }}</div>
+    {% endfor %}
+
+    <h2>Trend Graphs</h2>
+    {% for year, trend_graph_html in trend_graphs.items %}
+        <h3>{{ year }}</h3>
+        <div>{{ trend_graph_html | safe }}</div>
+    {% endfor %}
 </body>
 </html>

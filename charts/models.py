@@ -4,17 +4,15 @@ from techapp.models import *
 
 
 class File_Description(models.Model):
-    year = models.CharField(max_length=10)    
-    sheet_name = models.CharField(max_length=100, blank=True, null=True)
+    year_of_file = models.CharField(max_length=20)        
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)     # techapp course models
 
     def __str__(self):
-        if self.sheet_name:
-            return f"{self.year} - {self.sheet_name}"
-        else:
-            return str(self.year)
+        return f"{self.year_of_file} --> {self.course.course_code}"
+
 
 class Student(models.Model):
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=250) 
     cia_marks = models.IntegerField()
     semester_marks = models.IntegerField()
     total_marks = models.IntegerField()  
