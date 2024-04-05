@@ -3,23 +3,26 @@ import pandas as pd
 import plotly.express as px
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .forms import UploadForm
-from .models import Student, File_Description
+# from .forms import UploadForm
+from .models import *
 from django.db.models import Avg
 from techapp.models import *
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 import pandas as pd
 from django.shortcuts import render, redirect
-from .forms import UploadForm
-from .models import File_Description, Student
+
 
 def handle_excel_file(file, year_of_file, course_code):
     # Load Excel file into Pandas DataFrame
     df = pd.read_excel(file)
 
+    course = Course.objects.get(course_code=course_code)
     # Create File_Description object
-    file_desc = File_Description.objects.create(year_of_file=year_of_file, course__course_code=course_code)
+    file_desc = File_Description.objects.get(year_of_file=year_of_file, course=course)
     
     # Rename the first four headers
     df.columns = ['name', 'cia_marks', 'semester_marks', 'total_marks'] + list(df.columns[4:])
@@ -39,24 +42,42 @@ def process_data(df, file_desc):
             file_desc=file_desc
         )
 
-def upload_data(request):
-    if request.method == 'POST':
-        form = UploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = form.cleaned_data['file']
-            year_of_file = form.cleaned_data['year_of_file']
-            course_code = form.cleaned_data['course_code']
-            handle_excel_file(file, year_of_file, course_code)
-            return redirect('visualization_page')
-        else:
-            print("Form is invalid: ", form.errors)
-    else:
-        form = UploadForm()
+# def upload_data(request):
+#     if request.method == 'POST':
+#         year = request.POST.get('year_of_file')
+#         print(year)
+#         form = UploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             file = form.cleaned_data['file']
+#             year_of_file = form.cleaned_data['year_of_file']
+#             course_code = form.cleaned_data['course_code']
+#             handle_excel_file(file, year_of_file, course_code)
+#             return redirect('visualization_page')
+#         else:
+#             print("Form is invalid: ", form.errors)
+#     else:
+#         form = UploadForm()
 
-    years = File_Description.objects.values_list('year_of_file', flat=True).distinct()
+#     years = File_Description.objects.values_list('year_of_file', flat=True).distinct()
+#     course_codes = File_Description.objects.values_list('course__course_code', flat=True).distinct()
+
+#     return render(request, 'charts/upload_form.html', {'form': form, 'years': years, 'course_codes': course_codes})
+from django.shortcuts import render
+
+
+
+def upload_data(request):
+    years =  File_Description.objects.values_list('year_of_file', flat=True).distinct()
     course_codes = File_Description.objects.values_list('course__course_code', flat=True).distinct()
 
-    return render(request, 'charts/upload_form.html', {'form': form, 'years': years, 'course_codes': course_codes})
+    context={
+        'years': years, 
+        'course_codes': course_codes
+    }
+    return render(request, 'charts/upload_form.html', context)
+
+
+
 
 
 
@@ -147,18 +168,38 @@ def upload_data(request):
 '''
 
 
-def visualization_page(request):
-    years = File_Description.objects.values_list('year', flat=True).distinct()
+
+def visualization(request):
+    years = File_Description.objects.values_list('year_of_file', flat=True).distinct()
 
     individual_graphs = {}
     trend_graphs = {}
 
     if request.method == 'POST':
-        selected_year = request.POST.get('year')
+        file = request.FILES['file']
+        
+        # You can access other form data like this:
+        year_of_file = request.POST.get('year_of_file')
+        course_code = request.POST.get('course_code')
+
+        # Assuming the uploaded file is in Excel format
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # print("hello")
+            df = pd.read_excel(file)
+            handle_excel_file(file, year_of_file, course_code)
+
+        # print("reached post of visualization")
+        selected_year = request.POST.get('year_of_file')
         selected_course_code = request.POST.get('course_code')
+        # print(selected_course_code)
+        # print(selected_year)
 
         if selected_year is not None and selected_course_code is not None:
-            file_desc = File_Description.objects.get(year=selected_year, course_code=selected_course_code)
+            course = Course.objects.get(course_code=selected_course_code)
+            # Create File_Description object
+            file_desc = File_Description.objects.get(year_of_file=selected_year, course=course)
+            
+            # file_desc = File_Description.objects.get(year_of_file=selected_year, course_code=selected_course_code)
 
             students = Student.objects.filter(file_desc=file_desc)
 
@@ -173,14 +214,23 @@ def visualization_page(request):
             gte_avg_counts = []
             lt_avg_counts = []
 
+            
+
+            # Inside the loop where you're calculating average total marks
             for year in years:
-                year_file_desc = File_Description.objects.get(year=year, course_code=selected_course_code)
+                year_file_desc = File_Description.objects.get(year_of_file=year, course=course)
                 year_students = Student.objects.filter(file_desc=year_file_desc)
-                avg_total_marks = year_students.aggregate(avg_total_marks=pd.NamedAgg(column='total_marks', aggfunc='mean'))['avg_total_marks']
-                gte_avg_count = year_students.filter(total_marks__gte=avg_total_marks).count()
-                lt_avg_count = year_students.filter(total_marks__lt=avg_total_marks).count()
-                gte_avg_counts.append(gte_avg_count)
-                lt_avg_counts.append(lt_avg_count)
+                avg_total_marks = year_students.aggregate(avg_total_marks=Avg('total_marks'))['avg_total_marks']
+                if avg_total_marks is not None:
+                    gte_avg_count = year_students.filter(total_marks__gte=avg_total_marks).count()
+                    lt_avg_count = year_students.filter(total_marks__lt=avg_total_marks).count()
+                    gte_avg_counts.append(gte_avg_count)
+                    lt_avg_counts.append(lt_avg_count)
+                else:
+                    # Handle case where no students exist for the year
+                    gte_avg_counts.append(0)
+                    lt_avg_counts.append(0)
+
 
             # Generate trend graph
             trend_graph = px.bar(x=[str(year) for year in years], y=[lt_avg_counts, gte_avg_counts], labels={'x': 'Year', 'y': 'Count'}, width=800)

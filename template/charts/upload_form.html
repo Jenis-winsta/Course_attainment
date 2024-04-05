@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Upload Excel File</h1>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" action="{% url 'visualization'%}">
         {% csrf_token %} 
         
         <label for="year_of_file">Select Year:</label>
