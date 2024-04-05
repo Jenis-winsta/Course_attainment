@@ -21,4 +21,9 @@ git pull origin master-1
 
 git add .
 git commit -m ""
+<<<<<<< HEAD
 git push origin  master-1
+=======
+git push origin  master-1  
+blah
+>>>>>>> error

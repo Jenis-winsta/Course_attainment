@@ -18,6 +18,8 @@ admin.site.register(Programme_Specific_Outcome)
 admin.site.register(Course)
 admin.site.register(Course_Outcome)
 
+admin.site.register(Course_Programme_Outcome)
+
 
 # Register your models here.
 

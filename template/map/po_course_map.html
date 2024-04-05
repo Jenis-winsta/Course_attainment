@@ -1,0 +1,392 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Course Map</title>
+    <!-- plugins:css -->
+
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}" />
+    <style>
+        #signout:hover {
+            color: blueviolet;
+        }
+        .purple-button {
+        background-color: #8a2be2; /* Purple background color */
+        color: #fff; /* White text color */
+        font-weight: bold; /* Bold text */
+        padding: 10px 20px; /* Adjust padding as needed */
+        border: none; /* No border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Cursor on hover */
+        }
+
+        /* Hover effect */
+        .purple-button:hover {
+        background-color: #6a1b9a; /* Darker purple background color on hover */
+        color: #fff;
+        }
+        .custom-checkbox {
+            color: #8a2be2; /*Purple color*/
+        }
+
+        .custom-checkbox:checked {
+            background-color: #8a2be2; /* Purple color when checked */
+            border-color: #8a2be2; /* Purple border color when checked */
+        }
+
+        .custom-checkbox:disabled {
+            border-color: #8a2be2; /* Purple border color for disabled */
+            color: #777; /* Disabled text color */
+        }
+
+        .floating-notification {
+            position: fixed;
+            top: 80px; /* Adjust top position */
+            right: 20px; /* Adjust right position */
+            z-index: 1000; /* Ensure it's above other elements */
+            width: 300px; /* Adjust width as needed */
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #d4edda; /* Bootstrap's success color */
+            color: #155724; /* Bootstrap's success dark color */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        }
+
+        /* Close button style */
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+            /* Define a purple color */
+        .purple {
+            color: #6a0dad;
+        }
+
+        /* Style the dropdown menus */
+        select {
+            /* font-size: 16px; */
+            padding: 4px 6px;
+            /* border: 1px solid #6a0dad; */
+            border-radius: 5px;
+            background-color: white;
+            color: #6a0dad;
+        }
+
+        /* Style the dropdown options */
+        option {
+            background-color: white;
+            color: #6a0dad;
+        }
+
+        
+
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var closeSuccessMessageBtn = document.getElementById("closeSuccessMessage");
+            var successMessageDiv = document.getElementById("successMessage");
+    
+            if (closeSuccessMessageBtn && successMessageDiv) {
+                closeSuccessMessageBtn.addEventListener("click", function() {
+                    successMessageDiv.style.display = "none";
+                });
+            }
+        });
+    </script>
+    
+</head>
+
+<body>
+
+    <!-- Navbar -->
+
+    {% include 'PurpleTemplate/partials/_navbar.html' %}
+
+    <!-- Main content wrapper -->
+    <div class="container-fluid page-body-wrapper">
+
+        <!-- Sidebar -->
+        {% include 'PurpleTemplate/partials/_sidebar.html' %}
+        
+            <div class="main-panel">
+                <div class="content-wrapper">
+                <!-- Add this div for displaying success message -->
+                <!-- <div id="successMessage" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
+                    <strong>Data saved successfully!</strong>
+                    <button type="button" id="closeSuccessMessage" class="close btn border-0 p-0">
+                        <i class="mdi mdi-close text-success me-0"></i>
+                    </button>
+                </div> -->
+
+                <div id="successMessage" class="alert alert-success alert-dismissible fade show position-fixed top-200 end-0" role="alert" style="display: none;">
+                    <strong>Data saved successfully!</strong>
+                    <button type="button" id="closeSuccessMessage" class="close btn border-0 p-0">
+                        <i class="mdi mdi-close text-success me-0"></i>
+                    </button>
+                </div>
+                
+
+
+                    <form method="post" action="#" id="saveForm">
+                        {% csrf_token %}
+                    <div class="table-responsive">
+                        <h2>Table with PO and Course</h2>
+                        <h4>Course: {{course}}</h4>
+                        {% if courses %}
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Course Name</th>
+                                    {% for po in program_outcomes %}
+                                    <th>{{ po.code }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for course in courses %}
+                                <tr>
+                                    <td>{{ course.name }}</td>
+                                    {% for po in program_outcomes %}
+                                    <td>
+                                        <select name="dropdown_{{ course.id }}_{{ po.id }}" class="purple light-purple">
+                                            {% with connections=po_course_connections|get_value:course.id %}
+                                                {% if connections and po in connections %}
+                                                {% with strength=connections|get_value:po %}
+                                                    <option value="nd">nd</option>
+                                                    <option value="1"{% if strength == 1 %} selected{% endif %}>1</option>
+                                                    <option value="2"{% if strength == 2 %} selected{% endif %}>2</option>
+                                                    <option value="3"{% if strength == 3 %} selected{% endif %}>3</option>
+                                                    
+                                                {% endwith %}
+                                                {% else %}
+                                                    <option value="nd" default>nd</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    
+                                                {% endif %}
+                                            {% endwith %}
+                                        </select>
+                                        
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                            <p>No courses found.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-3 mb-2">
+                          <!-- Open PSO Window Button -->
+                          <button type="button" id="openPSOButton" class="btn btn-primary btn-block px-3" onclick="openPSOWindow('{{ course_name }}', '{{ course_id }}')">Open PSO Window</button>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                          <!-- Open CO Window Button -->
+                          <button type="button" id="openCOButton" class="btn btn-primary btn-block px-3" onclick="openCOWindow('{{ course_name }}', '{{ course_id }}')">Open CO Window</button>
+                        </div>
+                        <div class="col-md-3">
+                            <!-- Open CO Window Button -->
+                            <button type="button" id="openPOButton" class="btn btn-primary btn-block px-3" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
+                        </div>
+                        <!-- Edit /save -->
+                        <div class="col-md-3 mb-2">
+                            <button type="button" id="editSaveButton" class="btn btn-primary btn-block px-3" >Edit</button>
+                        </div>
+                        
+                    </div>
+                    <br>
+                    <!-- Button to submit form and redirect -->
+                    <!-- <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <button type="button" id="nextPageButton" class="btn btn-primary btn-block px-3" onclick="submitFormAndRedirect('{{ course_id }}')">Report</button>
+                        </div>
+                    </div> -->
+
+
+                    <!-- Add this div for displaying success message -->
+                    <div id="successMessage"></div>
+
+                      
+                    <!-- <button type="submit" id="saveButton" class="btn btn-primary btn-block px-3">Save</button> -->
+                    </form>
+
+                    
+                </div>
+            </div>
+        
+            
+            <script>
+                $(document).ready(function() {
+                    // Initially disable all dropdowns
+                    $('select').prop('disabled', true);
+
+                    // Handler for edit/save button click
+                    $('#editSaveButton').click(function() {
+                        var button = $(this);
+                        if (button.text() === 'Edit') {
+                            // Change button text to Save
+                            button.text('Save');
+                            // Enable dropdowns
+                            $('select').prop('disabled', false);
+                        } else {
+                            // Change button text to Edit
+                            button.text('Edit');
+                            // Disable dropdowns
+                            
+                            // Call function to save data
+                            saveDropdownData();
+                            $('select').prop('disabled', true);
+                        }
+                    });
+
+                    // Function to save dropdown data
+                    function saveDropdownData() {
+                        // Your AJAX call to save data
+                        $.ajax({
+                            url: '/save_dropdown_data/',
+                            method: 'POST',
+                            data: $('#saveForm').serialize(),  // Serialize form data
+                            success: function(response) {
+                                // Show success message
+                                $('#successMessage').fadeIn(); // Show the success notification
+                            },
+                            error: function(xhr, status, error) {
+                                // Handle error
+                                console.error(error);
+                            }
+                        });
+                    }
+                });
+
+
+                // function toggleEditMode() {
+                //     var button = $('#editSaveButton');
+                //     if (button.text() === 'Edit') {
+                //         // Change button text to Save
+                //         button.text('Save');
+                //         // Enable checkboxes
+                //         $('input[type="checkbox"]').prop('disabled', false);
+                //     } else {
+                //         // Change button text to Edit
+                //         button.text('Edit');
+                //         // Disable checkboxes
+                        
+                //         // Call function to save data
+                //         saveDropdownData();
+                //         $('input[type="checkbox"]').prop('disabled', true);
+                //     }
+                // }
+                
+
+                // function saveData() {
+                //     // Your AJAX call to save data
+                //     $.ajax({
+                //         url: '/save_data/',
+                //         method: 'POST',
+                //         data: $('#saveForm').serialize(),  // Serialize form data
+                //         success: function(response) {
+                //             // Show success message
+                //             $('#successMessage').fadeIn(); // Show the success notification
+                //         },
+                //         error: function(xhr, status, error) {
+                //             // Handle error
+                //             console.error(error);
+                //         }
+                //     });
+                // }
+
+                function saveDropdownData() {
+                    // Your AJAX call to save data
+                    $.ajax({
+                        url: '/save_dropdown_data/',
+                        method: 'POST',
+                        data: $('#saveForm').serialize(),  // Serialize form data
+                        success: function(response) {
+                            // Show success message
+                            $('#successMessage').fadeIn(); // Show the success notification
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error
+                            console.error(error);
+                        }
+                    });
+                }
+
+
+                
+
+                function submitFormAndRedirect(courseId) {
+                    // Submit the form
+                    document.getElementById('saveForm').submit();
+                    
+                    // Redirect to the next page with the course_id
+                    window.location.href = "{% url 'next_page' %}?course_id=" + courseId;
+                }
+
+
+              
+                // Function to open PSO Window
+                function openPSOWindow(courseName, courseId) {
+                    var url = "{% url 'pso' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
+                    window.open(url, "_blank", "width=800,height=600");
+                }
+            
+                // Function to open CO Window
+                function openCOWindow(courseName, courseId) {
+                    var url = "{% url 'co' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
+                    window.open(url, "_blank", "width=800,height=600");
+                }
+
+                // Function to open PO Window
+                function openPOWindow(courseName, courseId) {
+                    var url = "{% url 'po' %}?course_name=" + encodeURIComponent(courseName) + "&course_id=" + courseId;
+                    window.open(url, "_blank", "width=800,height=600");
+                }
+
+            </script>
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'assets/vendors/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/misc.js' %}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+    <!-- End custom js for this page -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+</body>
+
+</html>

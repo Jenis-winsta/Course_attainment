@@ -73,8 +73,12 @@
                       <label for="courses">Select Course:</label>
                       <select class="form-select" id="courses" name="course">
                         <option value="">-----</option>
-                          {% for course in courses %}
-                              <option value="{{ course.id }}" data-department-id="{{ course.department }}">{{ course.name }}</option>
+                          {% for year_group in courses_by_year %}
+                              <optgroup label="{{ year_group.year__name }}">
+                                  {% for course in year_group.courses %}
+                                      <option value="{{ course.id }}" data-department-id="{{ course.department }}">{{ course.name }}</option>
+                                  {% endfor %}
+                              </optgroup>
                           {% endfor %}
                       </select>
                     </div>

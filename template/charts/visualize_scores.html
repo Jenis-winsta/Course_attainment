@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 <!-- visualize_student_scores.html -->
+=======
+<!-- visualization_scores.html -->
+>>>>>>> error
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Student Scores Visualization</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
@@ -28,5 +33,22 @@
         <h2>Trend Comparison Graph</h2>
         <div id="trend_graph">{{ trend_graph|safe }}</div>
     {% endif %}
+=======
+    <title>Visualization Page</title>
+</head>
+<body>
+    <h1>Visualization Page</h1>
+    <h2>Individual Graphs</h2>
+    {% for year, individual_graph_html in individual_graphs.items %}
+        <h3>{{ year }}</h3>
+        <div>{{ individual_graph_html | safe }}</div>
+    {% endfor %}
+
+    <h2>Trend Graphs</h2>
+    {% for year, trend_graph_html in trend_graphs.items %}
+        <h3>{{ year }}</h3>
+        <div>{{ trend_graph_html | safe }}</div>
+    {% endfor %}
+>>>>>>> error
 </body>
 </html>

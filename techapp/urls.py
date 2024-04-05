@@ -25,6 +25,7 @@ urlpatterns=[
 
     path('save_results/', views.save_results, name='save_results'),
     path('save_data/', views.save_data, name='save_data'),
+    path('save_dropdown_data/', views.save_dropdown_data, name='save_dropdown_data'),
     path('success_page', views.success_page, name='success_page'),
     path('next_page', views.next_page, name='next_page'),
 
