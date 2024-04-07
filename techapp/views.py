@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from users.models import CustomUser
+from django.core import serializers
 from .models import *
 from .forms import *
 from django.shortcuts import get_object_or_404
@@ -30,6 +31,8 @@ def assign_course(request):
 
     # Check if the user is an admin
     if user.role == 'admin':
+        assigned_courses = Course.objects.exclude(assigned_to=None)
+        print(assigned_courses)
         # Fetch all courses grouped by year
         courses_by_year = (
             Course.objects.values('year__name')
@@ -44,6 +47,9 @@ def assign_course(request):
             ).order_by('name')
 
     else:
+        user = request.user
+        department_name = user.department
+        assigned_courses = Course.objects.exclude(assigned_to=None).filter(department__name=department_name)
         # Fetch courses based on the user's department
         courses_by_year = (
             Course.objects.filter(department__name=department_name)
@@ -68,6 +74,7 @@ def assign_course(request):
         'courses_by_year': courses_by_year,
         'teachers': teachers,
         'hods': hods,
+        'assigned_courses': assigned_courses
     }
     return render(request, 'course_assignment/assign_course.html', context)
 
@@ -117,7 +124,15 @@ def update_course_assignment(request):
             course.assigned_to_id = assigned_to_id
             course.save()
 
-            return JsonResponse({'success': True})
+                    # Fetch all assigned courses with their details
+            assigned_courses = Course.objects.exclude(assigned_to=None)
+
+            # Serialize the assigned courses data
+            assigned_courses_data = serializers.serialize('json', assigned_courses)
+
+            return JsonResponse({'assigned_courses': assigned_courses_data})
+
+            # return JsonResponse({'success': True})
 
         except Course.DoesNotExist:
             return JsonResponse({'error': 'Course not found'}, status=404)

@@ -105,6 +105,32 @@
                 </form>
             </div>
 
+            <div id="assigned_courses_table">
+              <h4>Assigned Courses</h4>
+              <table id="assigned_courses_table" class="table table-bordered">
+                  <thead>
+                      <tr>
+                          <th>Course Name</th>
+                          <th>Assigned Teacher</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for course in assigned_courses %}
+                      <tr>
+                          <td>{{ course.name }}</td>
+                          <td>
+                              {% if course.assigned_to %}
+                                  {{ course.assigned_to.username.capitalize }}
+                              {% else %}
+                                  Unassigned
+                              {% endif %}
+                          </td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+
         </div>
 
 
@@ -159,46 +185,37 @@ $(document).ready(function () {
 
 
 $(document).ready(function () {
-    $("#submit_button").on("click", function () {
-        // Get selected course ID and assigned user ID
-        var course_id = $("#courses").val();
-        var assigned_to_id = $("#teachers_hods").val();
+        // Handle form submission for assigning courses
+        $("#submit_button").on("click", function () {
+            var course_id = $("#courses").val();
+            var assigned_to_id = $("#teachers_hods").val();
 
-        // Validate course selection
-        if (!course_id) {
-            alert("Please select a course.");
-            return;
-        }
-
-        // Validate assigned user selection
-        if (!assigned_to_id) {
-            alert("Please select a user to assign the course to.");
-            return;
-        }
-
-        // Send AJAX request to update assigned user for the selected course
-        $.ajax({
-            url: "ajax/update_course_assignment/",
-            method: "POST",
-            data: {
-                course_id: course_id,
-                assigned_to_id: assigned_to_id,
-                csrfmiddlewaretoken: "{{ csrf_token }}"
-            },
-            dataType: "json",
-            success: function (data) {
-                // Handle success response (if needed)
-                alert("Course assigned successfully!");
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                // Handle error response (if needed)
-                alert("Failed to assign course. Please try again.");
+            if (!course_id || !assigned_to_id) {
+                alert("Please select both a course and a teacher/HOD.");
+                return;
             }
+
+            // Send AJAX request to assign the course
+            $.ajax({
+                url: "/ajax/update_course_assignment/",
+                method: "POST",
+                data: {
+                    course_id: course_id,
+                    assigned_to_id: assigned_to_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                dataType: "json",
+                success: function (data) {
+                    // Optionally handle success response (e.g., show confirmation)
+                    alert("Course assigned successfully!");
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    // Optionally handle error response (e.g., show error message)
+                    alert("Failed to assign course. Please try again.");
+                }
+            });
         });
     });
-});
-
-
 </script>
 
 
