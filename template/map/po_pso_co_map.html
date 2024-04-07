@@ -116,77 +116,91 @@
                 
 
 
-                    <form method="post" action="{% url 'save_data' %}" id="saveForm">
+                    <form method="post" action="{% url 'save_po_pso_co' %}" id="saveForm">
                         {% csrf_token %}
-                    <div class="table-responsive">
-                        <h2>Table with PO and CO</h2>
-                        <h4>Course: {{course}}</h4>
-                        <!-- <input type="hidden" id="courseIdInput" name="input_course_id" value="{{ course_id }}"> -->
-                        
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    {% for po in program_outcomes %}
-                                    <th>{{ po.code }}</th>
+                        <div class="table-responsive">
+                            <h2>Table with PO, PSO and CO</h2>
+                            <h4>Course: {{course}}</h4>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        {% for po in program_outcomes %}
+                                            <th>{{ po.code }}</th>
+                                        {% endfor %}
+                                        {% for pso in program_specific_outcomes %}
+                                            <th>{{ pso.code }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for co in course_outcomes %}
+                                        <tr>
+                                            <td>{{ co.code }}</td>
+                                            
+                                            {% comment %} Iterate over Programme Outcomes (POs) checkboxes {% endcomment %}
+                                            {% for po in program_outcomes %}
+                                                <td>
+                                                    {% if po.id in po_co_connections|get_co_po_ids:co.id %}
+                                                        <input type="checkbox" name="checkbox_{{ course_id }}_{{ co.id }}_po_{{ po.id }}" class="form-check-input custom-checkbox" disabled checked>
+                                                    {% else %}
+                                                        <input type="checkbox" name="checkbox_{{ course_id }}_{{ co.id }}_po_{{ po.id }}" class="form-check-input custom-checkbox" disabled>
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                            
+                                            {% comment %} Iterate over Programme Specific Outcomes (PSOs) checkboxes {% endcomment %}
+                                            {% for pso in program_specific_outcomes %}
+                                                <td>
+                                                    {% if pso.id in pso_co_connections|get_co_pso_ids:co.id %}
+                                                        <input type="checkbox" name="checkbox_{{ course_id }}_{{ co.id }}_pso_{{ pso.id }}" class="form-check-input custom-checkbox" disabled checked>
+                                                    {% else %}
+                                                        <input type="checkbox" name="checkbox_{{ course_id }}_{{ co.id }}_pso_{{ pso.id }}" class="form-check-input custom-checkbox" disabled>
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                            
+                                        </tr>
                                     {% endfor %}
-                                    <!-- Add more CO columns if needed -->
-                                </tr>
-                            </thead>
-        
-                            <tbody>
-                                {% for co in course_outcomes %}
-                                <tr>
-                                    <td>{{ co.code }}</td>
-                                    {% for po in program_outcomes %}
-                                    <td>
-                                        {% if po.id in po_co_connections|get_co_po_ids:co.id %}
-                                            <input type="checkbox" name="checkbox_{{course_id}}_{{ co.id }}_{{ po.id }}" class="form-check-input custom-checkbox" id="purpleCheckbox" disabled checked>
-                                        {% else %}
-                                            <input type="checkbox" name="checkbox_{{course_id}}_{{ co.id }}_{{ po.id }}" class="form-check-input custom-checkbox" disabled>
-                                        {% endif %}
-                                    </td>
-                                    {% endfor %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                </tbody>
+                            </table>
+                            
+                            
+                        </div>
 
-                    <div class="row mt-3">
-                        <div class="col-md-3 mb-2">
-                          <!-- Open PSO Window Button -->
-                          <button type="button" id="openPSOButton" class="btn btn-primary btn-block px-3" onclick="openPSOWindow('{{ course_name }}', '{{ course_id }}')">Open PSO Window</button>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                          <!-- Open CO Window Button -->
-                          <button type="button" id="openCOButton" class="btn btn-primary btn-block px-3" onclick="openCOWindow('{{ course_name }}', '{{ course_id }}')">Open CO Window</button>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="row mt-3">
+                            <div class="col-md-3 mb-2">
+                            <!-- Open PSO Window Button -->
+                            <button type="button" id="openPSOButton" class="btn btn-primary btn-block px-3" onclick="openPSOWindow('{{ course_name }}', '{{ course_id }}')">Open PSO Window</button>
+                            </div>
+                            <div class="col-md-3 mb-2">
                             <!-- Open CO Window Button -->
-                            <button type="button" id="openPOButton" class="btn btn-primary btn-block px-3" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
+                            <button type="button" id="openCOButton" class="btn btn-primary btn-block px-3" onclick="openCOWindow('{{ course_name }}', '{{ course_id }}')">Open CO Window</button>
+                            </div>
+                            <div class="col-md-3">
+                                <!-- Open CO Window Button -->
+                                <button type="button" id="openPOButton" class="btn btn-primary btn-block px-3" onclick="openPOWindow('{{ course_name }}', '{{ course_id }}')">Open PO Window</button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <!-- Edit/Save Button -->
+                                <button type="button" id="editSaveButton" class="btn btn-primary btn-block px-3" onclick="toggleEditMode()">Edit</button>
+                                <!-- <button id="editSaveButton" class="btn btn-primary btn-block px-3" onclick="toggleEditMode()">Save</button> -->
+                            </div>
+                            
                         </div>
-                        <div class="col-md-3 mb-2">
-                            <!-- Edit/Save Button -->
-                            <button type="button" id="editSaveButton" class="btn btn-primary btn-block px-3" onclick="toggleEditMode()">Edit</button>
-                            <!-- <button id="editSaveButton" class="btn btn-primary btn-block px-3" onclick="toggleEditMode()">Save</button> -->
+                        <br>
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <!-- Button to submit form and redirect -->
+                                <button type="button" id="nextPageButton" class="btn btn-primary btn-block px-3" onclick="submitFormAndRedirect('{{ course_id }}')">Report</button>
+                            </div>
                         </div>
-                        
-                    </div>
-                    <br>
-                    <div class="row">
-                        <div class="col-md-3 mb-2">
-                            <!-- Button to submit form and redirect -->
-                            <button type="button" id="nextPageButton" class="btn btn-primary btn-block px-3" onclick="submitFormAndRedirect('{{ course_id }}')">Report</button>
-                        </div>
-                    </div>
 
 
-                    <!-- Add this div for displaying success message -->
-                    <div id="successMessage"></div>
+                        <!-- Add this div for displaying success message -->
+                        <div id="successMessage"></div>
 
                       
-                    <!-- <button type="submit" id="saveButton" class="btn btn-primary btn-block px-3">Save</button> -->
                     </form>
 
                     
@@ -205,42 +219,41 @@
                     } else {
                         // Change button text to Edit
                         button.text('Edit');
-                        // Disable checkboxes
+                        
                         
                         // Call function to save data
                         saveData();
+
+                        // Disable checkboxes
                         $('input[type="checkbox"]').prop('disabled', true);
                     }
                 }
-                
 
                 function saveData() {
-                    // Your AJAX call to save data
+                    var formData = $('#saveForm').serialize();
+                    // console.log(formData);  // Check serialized form data in browser console
                     $.ajax({
-                        url: '/save_data/',
+                        url: '/save_po_pso_co/',
                         method: 'POST',
-                        data: $('#saveForm').serialize(),  // Serialize form data
+                        data: formData,
                         success: function(response) {
-                            // Show success message
+                            console.log(response);  // Log server response for debugging
                             $('#successMessage').fadeIn(); // Show the success notification
                         },
                         error: function(xhr, status, error) {
-                            // Handle error
-                            console.error(error);
+                            console.error(error);  // Log any AJAX errors for debugging
                         }
                     });
                 }
 
-                
+
 
                 function submitFormAndRedirect(courseId) {
                     // Submit the form
                     document.getElementById('saveForm').submit();
-                    
                     // Redirect to the next page with the course_id
                     window.location.href = "{% url 'report_page' %}?course_id=" + courseId;
-                }
-
+                } 
 
               
                 // Function to open PSO Window

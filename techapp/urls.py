@@ -25,9 +25,10 @@ urlpatterns=[
 
     path('save_results/', views.save_results, name='save_results'),
     path('save_data/', views.save_data, name='save_data'),
+    path('save_po_pso_co/', views.save_po_pso_co, name='save_po_pso_co'),
     path('save_dropdown_data/', views.save_dropdown_data, name='save_dropdown_data'),
     path('success_page', views.success_page, name='success_page'),
-    path('next_page', views.next_page, name='next_page'),
+    path('report_page', views.report_page, name='report_page'),
 
 
     path('assign_course', views.assign_course, name='assign_course'),

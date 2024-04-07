@@ -203,6 +203,62 @@ def get_programme_outcomes(request, course_id):
     except Course.DoesNotExist:
         return JsonResponse({'error': 'Course not found'}, status=404)
   
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from .models import Course, Course_Outcome, Programme_Outcome, Programme_Specific_Outcome
+
+def save_po_pso_co(request):
+    if request.method == 'POST':
+        # Retrieve all POST keys related to checkboxes
+        checkbox_keys = [key for key in request.POST if key.startswith('checkbox_')]
+
+        # Loop through each checkbox key to process associations
+        for checkbox_key in checkbox_keys:
+            parts = checkbox_key.split('_')
+            if len(parts) != 5:
+                continue  # Skip invalid keys
+
+            course_id = parts[1]
+            co_id = parts[2]
+            outcome_type = parts[3]  # 'po' or 'pso'
+            outcome_id = parts[4]
+
+            # Retrieve the Course Outcome object based on ID
+            co = get_object_or_404(Course_Outcome, pk=co_id)
+
+            # Determine the related field and outcome model based on outcome type
+            if outcome_type == 'po':
+                # Clear existing associations for the current course
+                course = Course.objects.get(pk=course_id)
+                for co in Course_Outcome.objects.filter(course=course):
+                    co.programme_outcomes.clear()
+
+                # Iterate through the checkboxes to add new associations
+                for co in Course_Outcome.objects.filter(course=course):
+                    for po in Programme_Outcome.objects.all():
+                        checkbox_name = f"checkbox_{course_id}_{co.id}_po_{po.id}"
+                        if checkbox_name in request.POST:
+                            co.programme_outcomes.add(po)
+            elif outcome_type == 'pso':
+                course = Course.objects.get(pk=course_id)
+                for co in Course_Outcome.objects.filter(course=course):
+                    co.programme_specific_outcomes.clear()
+
+                # Iterate through the checkboxes to add new associations
+                for co in Course_Outcome.objects.filter(course=course):
+                    for pso in Programme_Specific_Outcome.objects.all():
+                        checkbox_name = f"checkbox_{course_id}_{co.id}_pso_{pso.id}"
+                        if checkbox_name in request.POST:
+                            co.programme_specific_outcomes.add(pso)
+            else:
+                continue  # Skip unexpected outcome type
+
+        return HttpResponse("Data saved successfully.")
+    else:
+        return render(request, 'map/po_pso_co_map.html')
+
+
+
 
 def save_results(request):
     if request.method == 'POST':
@@ -426,6 +482,43 @@ def result(request):
         })
 
         return render(request, 'map/po_co_map.html', context)
+    
+    elif dec == 'po_pso_co':
+        # Retrieve Programme ID associated with the course
+        programme_id = course.programme_id
+        
+        # Fetch Programme Outcomes based on Programme ID
+        po = Programme_Outcome.objects.filter(programme_id=programme_id)
+        
+        # Fetch PSO based on the related Department
+        department = course.department
+        pso = Programme_Specific_Outcome.objects.filter(department=department)
+        
+        # Fetch Course Outcomes for the specific course
+        co = course.course_outcome_set.all()
+        
+        # Fetch PO-CO connections for each CO
+        po_co_connections = []
+        for outcome in co:
+            connected_po_ids = outcome.programme_outcomes.values_list('id', flat=True)
+            po_co_connections.append((outcome.id, connected_po_ids))
+        
+        # Fetch PSO-CO connections for each CO
+        pso_co_connections = []
+        for outcome in co:
+            connected_pso_ids = outcome.programme_specific_outcomes.values_list('id', flat=True)
+            pso_co_connections.append((outcome.id, connected_pso_ids))
+        
+        context.update({
+            'program_outcomes': po,
+            'program_specific_outcomes': pso,
+            'course_outcomes': co,
+            'po_co_connections': po_co_connections,
+            'pso_co_connections': pso_co_connections,
+        })
+        
+        return render(request, 'map/po_pso_co_map.html', context)
+
     else:
         # Handle invalid display option
         return render(request, 'error.html', {'message': 'Invalid display option'})
@@ -433,8 +526,8 @@ def result(request):
 
 
 
-
-def next_page(request):
+#for the report page
+def report_page(request):
     # Get the course_id from the query parameters
     course_id = request.GET.get('course_id')
 
@@ -448,13 +541,9 @@ def next_page(request):
     co = course.course_outcome_set.all()
     po = Programme_Outcome.objects.filter(programme_id=programme_id)
     pso = Programme_Specific_Outcome.objects.filter(department=department)
-
+    # print(pso)
     # Fetch PSO-CO connections for each CO
-    pso_co_connections = []
 
-    for outcome in co:
-        connected_pso_ids = outcome.programme_specific_outcomes.values_list('id', flat=True)
-        pso_co_connections.append((outcome.id, connected_pso_ids))
 
     
     # Fetch PO-CO connections for each CO
@@ -463,6 +552,13 @@ def next_page(request):
     for outcome in co:
         connected_po_ids = outcome.programme_outcomes.values_list('id', flat=True)
         po_co_connections.append((outcome.id, connected_po_ids))
+
+
+    pso_co_connections = []
+
+    for outcome in co:
+        connected_pso_ids = outcome.programme_specific_outcomes.values_list('id', flat=True)
+        pso_co_connections.append((outcome.id, connected_pso_ids))
 
 
     # print(po_co_connections)
