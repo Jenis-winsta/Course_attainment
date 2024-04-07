@@ -24,3 +24,16 @@ git commit -m ""
 
 git push origin  master-1
 
+
+
+-- merging
+target: branch-b
+git checkout branch-B
+git pull origin branch-B
+git merge branch-A
+    resolve conflicts manually
+    git add <resolved-files>
+    git merge --continue
+git commit
+git push origin branch-B
+

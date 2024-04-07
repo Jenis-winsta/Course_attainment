@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-<!-- import_excel.html -->
-=======
->>>>>>> error
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <title>Import Excel</title>
-</head>
-<body>
-    <h1>Import Excel File</h1>
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-=======
     <title>Upload Excel File</title>
 </head>
 <body>
@@ -47,7 +27,6 @@
         <label for="file">Choose Excel File:</label>
         <input type="file" id="file" name="file" accept=".xlsx, .xls">
         <br><br>
->>>>>>> error
         <button type="submit">Upload</button>
     </form>
 </body>
