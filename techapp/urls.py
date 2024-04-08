@@ -29,6 +29,7 @@ urlpatterns=[
     path('save_dropdown_data/', views.save_dropdown_data, name='save_dropdown_data'),
     path('success_page', views.success_page, name='success_page'),
     path('report_page', views.report_page, name='report_page'),
+    path('report_page_range/', views.report_page_range, name='report_page_range'),
 
 
     path('assign_course', views.assign_course, name='assign_course'),

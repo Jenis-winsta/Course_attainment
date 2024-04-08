@@ -203,9 +203,6 @@ def get_programme_outcomes(request, course_id):
     except Course.DoesNotExist:
         return JsonResponse({'error': 'Course not found'}, status=404)
   
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from .models import Course, Course_Outcome, Programme_Outcome, Programme_Specific_Outcome
 
 def save_po_pso_co(request):
     if request.method == 'POST':
@@ -541,10 +538,6 @@ def report_page(request):
     co = course.course_outcome_set.all()
     po = Programme_Outcome.objects.filter(programme_id=programme_id)
     pso = Programme_Specific_Outcome.objects.filter(department=department)
-    # print(pso)
-    # Fetch PSO-CO connections for each CO
-
-
     
     # Fetch PO-CO connections for each CO
     po_co_connections = []
@@ -553,17 +546,13 @@ def report_page(request):
         connected_po_ids = outcome.programme_outcomes.values_list('id', flat=True)
         po_co_connections.append((outcome.id, connected_po_ids))
 
-
+    # Fetch PSO-CO connections for each CO
     pso_co_connections = []
 
     for outcome in co:
         connected_pso_ids = outcome.programme_specific_outcomes.values_list('id', flat=True)
         pso_co_connections.append((outcome.id, connected_pso_ids))
 
-
-    # print(po_co_connections)
-    # print(pso_co_connections)
-    # print(pso)
 
     # Pass the fetched data to the template context
     context = {
@@ -579,8 +568,58 @@ def report_page(request):
     # Render the report.html template with the fetched data
     return render(request, 'map/report.html', context)
 
+def report_page_range(request):
+    # Retrieve all departments
+    departments = Department.objects.all()
 
+    # Prepare data to be displayed in the template
+    department_data = []
 
+    # Set to collect unique Programme_Outcome instances
+    all_programme_outcomes = set()
+
+    for department in departments:
+        # Retrieve all courses belonging to the current department
+        courses = Course.objects.filter(department=department)
+
+        # Prepare a list to hold course information with assigned POs and strengths
+        courses_data = []
+
+        for course in courses:
+            # Retrieve all assigned POs with strengths for the current course
+            course_poss = Course_Programme_Outcome.objects.filter(course=course)
+
+            # Collect PO information with strengths
+            po_info = []
+            for course_po in course_poss:
+                po_details = {
+                    'programme_outcome': course_po.programme_outcome,
+                    'strength': course_po.strength
+                }
+                po_info.append(po_details)
+                all_programme_outcomes.add(course_po.programme_outcome)
+
+            # Prepare course information along with assigned POs for the current department
+            course_info = {
+                'course': course,
+                'po_info': po_info
+            }
+            courses_data.append(course_info)
+
+        # Append department information along with courses data to the department_data list
+        department_info = {
+            'department': department,
+            'courses_data': courses_data
+        }
+        department_data.append(department_info)
+
+    context = {
+        'department_data': department_data,
+        'all_programme_outcomes': sorted(all_programme_outcomes, key=lambda x: x.id)  # Sort for consistent order
+    }
+
+    # Render the template with the prepared context
+    return render(request, 'map/report_range.html', context)
 
 
 def register(request):

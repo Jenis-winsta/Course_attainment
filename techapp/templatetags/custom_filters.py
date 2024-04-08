@@ -22,3 +22,15 @@ def get_co_po_ids(po_co_connections, co_id):
 def get_value(dictionary, key):
     return dictionary.get(key)
 
+
+@register.filter(name='get_by_po_id')
+def get_by_po_id(po_info_list, po_id):
+    for po_info in po_info_list:
+        if po_info['programme_outcome'].id == po_id:
+            return po_info
+    return None
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key, None)

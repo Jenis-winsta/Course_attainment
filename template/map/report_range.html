@@ -1,0 +1,61 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Department-wise Course Report</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Department-wise Course Report</h1>
+
+    {% for department_info in department_data %}
+        <h2>Department: {{ department_info.department.name }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                    {% for po in all_programme_outcomes %}
+                        <th>{{ po.code }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for course_info in department_info.courses_data %}
+                    <tr>
+                        <td>{{ course_info.course.course_code }}</td>
+                        <td>{{ course_info.course.name }}</td>
+                        {% for po in all_programme_outcomes %}
+                            <td>
+                                {% with po_info=course_info.po_info|get_by_po_id:po.id %}
+                                    {% if po_info %}
+                                        {{ po_info.strength }}
+                                    {% else %}
+                                        &nbsp; <!-- Display blank if not connected -->
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+</body>
+</html>
+
+
+

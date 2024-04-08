@@ -222,18 +222,17 @@
                     </div>
                     <br>
                     <!-- Button to submit form and redirect -->
-                    <!-- <div class="row">
+                    <div class="row">
                         <div class="col-md-3 mb-2">
-                            <button type="button" id="nextPageButton" class="btn btn-primary btn-block px-3" onclick="submitFormAndRedirect('{{ course_id }}')">Report</button>
+                            <button type="button"  class="btn btn-primary btn-block px-3" onclick="submitFormAndRedirect('{{ course_id }}')">Report</button>
                         </div>
-                    </div> -->
+                    </div>
 
 
                     <!-- Add this div for displaying success message -->
                     <div id="successMessage"></div>
 
                       
-                    <!-- <button type="submit" id="saveButton" class="btn btn-primary btn-block px-3">Save</button> -->
                     </form>
 
                     
@@ -283,70 +282,14 @@
                         });
                     }
                 });
-
-
-                // function toggleEditMode() {
-                //     var button = $('#editSaveButton');
-                //     if (button.text() === 'Edit') {
-                //         // Change button text to Save
-                //         button.text('Save');
-                //         // Enable checkboxes
-                //         $('input[type="checkbox"]').prop('disabled', false);
-                //     } else {
-                //         // Change button text to Edit
-                //         button.text('Edit');
-                //         // Disable checkboxes
-                        
-                //         // Call function to save data
-                //         saveDropdownData();
-                //         $('input[type="checkbox"]').prop('disabled', true);
-                //     }
-                // }
-                
-
-                // function saveData() {
-                //     // Your AJAX call to save data
-                //     $.ajax({
-                //         url: '/save_data/',
-                //         method: 'POST',
-                //         data: $('#saveForm').serialize(),  // Serialize form data
-                //         success: function(response) {
-                //             // Show success message
-                //             $('#successMessage').fadeIn(); // Show the success notification
-                //         },
-                //         error: function(xhr, status, error) {
-                //             // Handle error
-                //             console.error(error);
-                //         }
-                //     });
-                // }
-
-                function saveDropdownData() {
-                    // Your AJAX call to save data
-                    $.ajax({
-                        url: '/save_dropdown_data/',
-                        method: 'POST',
-                        data: $('#saveForm').serialize(),  // Serialize form data
-                        success: function(response) {
-                            // Show success message
-                            $('#successMessage').fadeIn(); // Show the success notification
-                        },
-                        error: function(xhr, status, error) {
-                            // Handle error
-                            console.error(error);
-                        }
-                    });
-                }
-
-
-                
+                             
 
                 function submitFormAndRedirect(courseId) {
                     // Submit the form
                     document.getElementById('saveForm').submit();
                     
                     // Redirect to the next page with the course_id
-                    window.location.href = "{% url 'next_page' %}?course_id=" + courseId;
+                    window.location.href = "{% url 'report_page_range' %}?course_id=" + courseId;
                 }
 
 
