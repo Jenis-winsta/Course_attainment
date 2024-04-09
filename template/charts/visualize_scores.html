@@ -1,0 +1,37 @@
+<!-- visualize_scores.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualization Page</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Visualization Page</h1>
+
+    <form action="{% url 'visualization' %}" method="get">
+        <label for="year_select">Select Year:</label>
+        <select id="year_select" name="year_select">
+            {% for year in years %}
+                <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">View Data</button>
+    </form>
+
+    {% if selected_year %}
+
+        <h2>Percentage of Attainment for {{ selected_year }}</h2>
+        <p>Percentage of Attainment: {{ attainment_percentage }}</p>
+
+        <h2>Individual Graph for {{ selected_year }}</h2>
+        <div id="individual_graph">{{ individual_graph_html | safe }}</div>
+
+        <h2>Trend Graph for {{ selected_year }}</h2>
+        <div id="trend_graph">{{ trend_graph_html | safe }}</div>
+
+        
+    {% else %}
+        <p>Please select a year to visualize data.</p>
+    {% endif %}
