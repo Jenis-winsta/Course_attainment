@@ -1,37 +1,176 @@
-<!-- visualize_scores.html -->
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualization Page</title>
+
+    <!-- Load external scripts -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Load static assets -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}" />
+
+    <!-- Custom styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container-fluid {
+            display: flex;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background-color: #f8f9fa;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .navbar-icon {
+            color: #673ab7;
+            font-size: 20px; /* Adjust icon size */
+            margin-right: 10px;
+        }
+
+        .main-panel {
+            margin-left: 250px; /* Adjust based on sidebar width */
+            padding-top: 60px; /* Adjust based on navbar height */
+            padding: 20px;
+            width: 100%;
+        }
+
+        .visualization-data {
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Visualization Page</h1>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="navbar-icon">
+            <i class="mdi mdi-map mdi-24px"></i> <!-- Adjust icon size here -->
+        </div>
+        <div class="sidebar-content">
+            <!-- Include sidebar content -->
+            {% include 'PurpleTemplate/partials/_sidebar.html' %}
+            <!-- Include admin/profile icon -->
+            <div class="admin-profile-icon">
+                <i class="mdi mdi-account mdi-20px"></i> <!-- Adjust icon size here -->
+            </div>
+        </div>
+    </div>
 
-    <form action="{% url 'visualization' %}" method="get">
-        <label for="year_select">Select Year:</label>
-        <select id="year_select" name="year_select">
-            {% for year in years %}
-                <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">View Data</button>
-    </form>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-icon">
+            <i class="mdi mdi-map mdi-24px"></i> <!-- Adjust icon size here -->
+        </div>
+        {% include 'PurpleTemplate/partials/_navbar.html' %}
+    </div>
 
-    {% if selected_year %}
+    <!-- Main content wrapper -->
+    <div class="container-fluid">
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title">
+                        <span class="page-title-icon bg-gradient-primary text-white me-2">
+                            <i class="mdi mdi-map"></i>
+                        </span>
+                        Visuals
+                    </h3>
+                    <!-- Breadcrumbs -->
+                    <nav aria-label="breadcrumb">
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <span></span>Overview
+                                <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
 
-        <h2>Percentage of Attainment for {{ selected_year }}</h2>
-        <p>Percentage of Attainment: {{ attainment_percentage }}</p>
+                <!-- Visualization section -->
+                <section>
+                    <h1>Visualization Page</h1>
 
-        <h2>Individual Graph for {{ selected_year }}</h2>
-        <div id="individual_graph">{{ individual_graph_html | safe }}</div>
+                    <!-- Year selection form -->
+                    <form action="{% url 'visualization' %}" method="get">
+                        <label for="year_select">Select Year:</label>
+                        <select id="year_select" name="year_select">
+                            {% for year in years %}
+                            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">View Data</button>
+                    </form>
 
-        <h2>Trend Graph for {{ selected_year }}</h2>
-        <div id="trend_graph">{{ trend_graph_html | safe }}</div>
+                    <!-- Display visualization data -->
+                    {% if selected_year %}
+                    <div class="visualization-data">
+                        <h2>Percentage of Attainment for {{ selected_year }}</h2>
+                        <p>Percentage of Attainment: {{ attainment_percentage }}</p>
+                        <br><br>
+                        <h2>Individual Graph for {{ selected_year }}</h2>
+                        <div id="individual_graph">{{ individual_graph_html | safe }}</div>
+                        <br><br>
+                        <h2>Trend Graph for {{ selected_year }}</h2>
+                        <div id="trend_graph">{{ trend_graph_html | safe }}</div>
+                    </div>
+                    {% else %}
+                    <p>Please select a year to visualize data.</p>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+    </div>
 
-        
-    {% else %}
-        <p>Please select a year to visualize data.</p>
-    {% endif %}
+    <!-- Load JavaScript dependencies -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.cookie.js' %}"></script>
+
+    <!-- Custom scripts -->
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/misc.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+</body>
+
+</html>
