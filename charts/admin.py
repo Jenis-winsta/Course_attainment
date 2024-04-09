@@ -7,7 +7,7 @@ from .forms import *
 @admin.register(Student)
 class StudentAdmin(ImportExportModelAdmin):
     
-    list_display = ('name', 'cia_marks', 'semester_marks', 'total_marks',)
+    list_display = ('file_desc', 'name', 'cia_marks', 'semester_marks', 'total_marks',)
     
 
 

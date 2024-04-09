@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,40 @@
     <h1>Upload Excel File</h1>
     <form method="post" enctype="multipart/form-data" action="{% url 'visualization'%}">
         {% csrf_token %} 
+        
+        <label for="year_of_file">Select Year:</label>
+        <select id="year_of_file" name="year_of_file">
+            {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="course_code">Select Course Code:</label>
+        <select id="course_code" name="course_code">
+            {% for code in course_codes %}
+                <option value="{{ code }}">{{ code }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="file">Choose Excel File:</label>
+        <input type="file" id="file" name="file" accept=".xlsx, .xls">
+        <br><br>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Excel File</title>
+</head>
+<body>
+    <h1>Upload Excel File</h1>
+    <form method="post" enctype="multipart/form-data" >
+        {% csrf_token %}
         
         <label for="year_of_file">Select Year:</label>
         <select id="year_of_file" name="year_of_file">
