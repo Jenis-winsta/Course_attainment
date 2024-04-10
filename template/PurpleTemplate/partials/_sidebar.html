@@ -1,6 +1,23 @@
 <!-- partial:partials/_sidebar.html -->
 {% load static %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+  var currentUrl = window.location.pathname; // Get current URL path
+  
+  // Select all nav links within the sidebar
+  var navLinks = document.querySelectorAll('.nav-link');
 
+  // Loop through each nav link
+  navLinks.forEach(function(link) {
+    // Check if the href attribute of the link matches the current URL path
+    if (link.getAttribute('href') === currentUrl) {
+      // Add the 'active' class to the parent <li> element of the current link
+      link.parentNode.classList.add('active');
+    }
+  });
+});
+
+</script>
 
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <ul class="nav">
@@ -51,9 +68,21 @@
     <li class="nav-item">
       <a class="nav-link" href="{% url 'visualization' %}">      
         <span class="menu-title">Visuals</span>
-        <i class="mdi mdi-chart-areaspline"></i>
+        <i class="mdi mdi-chart-areaspline menu-icon"></i>
       </a>
     </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'course_attain' %}">      
+        <span class="menu-title">Attainment</span>
+        <i class="mdi mdi-checkbox-marked menu-icon"></i>
+      </a>
+    </li>
+    
+
+    
+
+
 
   </ul>
 </nav>

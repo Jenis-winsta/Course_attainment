@@ -1,0 +1,32 @@
+<!-- course_table_partial.html -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Year</th>
+            <th>Semester</th>
+            <th>Course Code</th>
+            <th>Attainment Percentage (%)</th>
+            {% for po in programme_outcomes %}
+                <th>PO {{ po.code }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+            <tr>
+                <td>{{ course.year }}</td>
+                <td>{{ course.semester }}</td>
+                <td>{{ course.course_code }}</td>
+                <td>{{ course.attainment_percentage }}</td>
+                {% for po in programme_outcomes %}
+                    {% for po_data in course.po_data %}
+                        {% if po_data.po_code == po.code %}
+                            <td>{{ po_data.strength }}</td>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

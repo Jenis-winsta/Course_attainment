@@ -1,0 +1,181 @@
+{% load static %}
+
+{% block top %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Attainment</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+  <!-- plugins:css -->
+
+  <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <!-- endinject -->
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+  <!-- End layout styles -->
+  <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}" />
+  <style>
+    #signout:hover {
+      color: blueviolet;
+    }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+{% endblock %}
+
+<body>
+
+  {% include 'PurpleTemplate/partials/_navbar.html' %}
+
+  <!-- Main content wrapper -->
+  <div class="container-fluid page-body-wrapper">
+
+    <!-- Sidebar -->
+    {% include 'PurpleTemplate/partials/_sidebar.html' %}
+
+    <!-- Main panel -->
+    <div class="main-panel">
+      <div class="content-wrapper">
+        <!-- Page header -->
+        <div class="page-header">
+          <h3 class="page-title">
+            <span class="page-title-icon bg-gradient-primary text-white me-2">
+              <i class="mdi mdi-home"></i>
+            </span> Course Attainment
+          </h3>
+          <!-- Breadcrumbs -->
+          <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item active" aria-current="page">
+                <span></span>Overview <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="container mt-5">
+          <form id="filterForm" method="post">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="dept">Department:</label>
+                  <select id="dept" name="dept" class="form-select">
+                      {% for department in departments %}
+                          <option value="{{ department.id }}">{{ department.name }}</option>
+                      {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="sem">Semester:</label>
+                  <select id="sem" name="sem" class="form-select">
+                      {% for semester in semesters %}
+                          <option value="{{ semester.id }}">{{ semester.name }}</option>
+                      {% endfor %}
+                  </select>
+                </div>
+              </div>
+                <div class="col-md-3"><div class="form-group">
+                  <label for="passoutYear">Passout Year:</label>
+                  <select id="passoutYear" name="passoutYear" class="form-select">
+                      {% for year in passout_years %}
+                          <option value="{{ year.year }}">{{ year.year }}</option>
+                      {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4 text-center">
+                <button type="submit" class="btn btn-primary ">Generate Table</button>
+              </div>
+          </form>
+  
+          <div id="tableContainer" class="mt-4"></div>
+
+            
+
+          
+
+          </div>
+         </div>
+
+          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+          <script>
+              
+              $(document).ready(function() {
+                $('#filterForm').submit(function(event) {
+                    event.preventDefault();  // Prevent default form submission
+
+                    var deptId = $('#dept').val();
+                    var semId = $('#sem').val();
+                    var passoutYear = $('#passoutYear').val();
+
+                    // AJAX call to fetch and display table
+                    $.ajax({
+                        type: 'POST',
+                        url: '{% url "courses_by_department_semester" %}',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        data: {
+                            'dept_id': deptId,
+                            'sem_id': semId,
+                            'passout_year': passoutYear,
+                            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                        },
+                        success: function(response) {
+                            $('#tableContainer').html(response.table_html);
+                        },
+                        error: function(xhr, errmsg, err) {
+                            console.log(xhr.status + ": " + xhr.responseText); // Log any error messages
+                        }
+                    });
+                });
+            });
+
+</script>
+
+          </script>
+
+        </div>
+
+
+
+      </div>
+      <!-- Content wrapper ends -->
+
+      <!-- Footer (if any) -->
+      <!-- partial:partials/_footer.htmCourse Mapl -->
+    </div>
+    <!-- Main panel ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="{% static 'assets/vendors/chart.js/Chart.min.js' %}"></script>
+  <script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+  <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+  <script src="{% static 'assets/js/misc.js' %}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page -->
+  <script src="{% static 'assets/js/dashboard.js' %}"></script>
+  <script src="{% static 'assets/js/todolist.js' %}"></script>
+  <!-- End custom js for this page -->
+</body>
+
+</html>

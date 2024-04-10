@@ -710,3 +710,7 @@ def dashboard(request):
 #         'dept':dept
 #     }
 #     return render(request, '')
+
+
+def course_attain(request):
+    return render(request, 'attainment/course_attainment.html')

@@ -38,10 +38,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Excel File</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 </head>
 <body>
     <h1>Upload Excel File</h1>
-    <form method="post" enctype="multipart/form-data" >
+    <!-- <form method="post" enctype="multipart/form-data" >
         {% csrf_token %}
         
         <label for="year_of_file">Select Year:</label>
@@ -62,6 +65,176 @@
         <input type="file" id="file" name="file" accept=".xlsx, .xls">
         <br><br>
         <button type="submit">Upload</button>
-    </form>
+    </form> -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-3">
+              <div class="form-group">
+                  <label for="department">Department:</label>
+                  <select class="form-select" id="department"  name="department" {% if not request.user.is_superuser %} disabled {% endif %}>
+                      <!-- <option value="" {% if not request.user.is_superuser %} disabled {% endif %}>-----</option> -->
+                      {% if not request.user.is_superuser %}
+                          {% for dept in departments %}  
+                              {% if dept.name == request.user.department %}
+                                  <option value="{{ dept.id }}" {% if not request.user.is_superuser %} selected {% endif %}>{{ request.user.department }}</option>
+                              {% endif%}
+                          {% endfor %}
+                      {% else %}
+                          {% for dept in departments %}
+                              <option value="{{ dept.id }}" >{{ dept.name }}</option>
+                          {% endfor %}
+                      {% endif %}
+                  </select>
+              </div>
+        </div>
+          
+
+        </div>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="year">Year:</label> 
+              <select
+                class="form-select"
+                aria-label="default-option"
+                id="years"
+                name="years"
+              >
+                <option selected>-----</option>
+                {% for year in years %}
+                <option value="{{ year.id }}">Year {{ year.id }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="semester">Semester:</label>
+              <select
+                class="form-select"
+                aria-label="default-option"
+                id="semesters"
+                name="semesters"
+              >
+                <option value="">-----</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="course">Courses:</label>
+              <select
+                class="form-select"
+                aria-label="default-option"
+                id="courses"
+                name="courses"
+                required
+              >
+                <option value="">-----</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="passout_year" class="form-label">Select Passout Year</label>
+            <select class="form-select" id="passout_year" name="passout_year" required>
+              <option value="" selected disabled>Passout Year</option>
+              {% for passout_year in passout_years %}
+                <option value="{{ passout_year.year }}">{{ passout_year }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <br><br>
+            <label for="file">Choose Excel File:</label>
+            <input type="file" id="file" name="file" accept=".xlsx, .xls">
+            <br><br>
+            
+
+          <div class="col-md-3">
+            <div class="form-group">
+              <button
+                type="submit"
+                onclick="loadContent()"
+                class="btn btn-primary"
+              >
+              Upload
+              </button>
+            </div>
+          </div>
+
+          
+        </div>
+      </form>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+        $(document).ready(function () {
+          $("#years").on("change", function () {
+            var year_id = $(this).val();
+            if (year_id) {
+              $.ajax({
+                url: "/ajax/load-semesters/",
+                data: {
+                  year: year_id,
+                },
+                dataType: "json",
+                success: function (data) {
+                  var semesters = data.semesters;
+                  var semester_html = '<option value="">-----</option>';
+                  for (var i = 0; i < semesters.length; i++) {
+                    semester_html +=
+                      '<option value="' +
+                      semesters[i].id +
+                      '">' +
+                      semesters[i].name +
+                      "</option>";
+                  }
+                  $("#semesters").html(semester_html);
+                },
+              });
+            } else {
+              $("#semesters").html('<option value="">-----</option>');
+              $("#courses").html('<option value="">-----</option>');
+            }
+          });
+  
+          $("#semesters").on("change", function () {
+            var semester_id = $(this).val();
+            var department_id = $("#department").val();
+            // alert(department_id);
+            if (semester_id) {
+              $.ajax({
+                url: "/ajax/load-courses/",
+                data: {
+                  semester: semester_id,
+                  department: department_id
+                },
+                dataType: "json",
+                success: function (data) {
+                  var courses = data.courses;
+                  var course_html = '<option value="">-----</option>';
+                  for (var i = 0; i < courses.length; i++) {
+                    course_html +=
+                      '<option value="' +
+                      courses[i].id +
+                      '">' +'(' +courses[i].course_code+')'+
+                      courses[i].name +
+                      "</option>";
+                  }
+                  $("#courses").html(course_html);
+                },
+              });
+            } else {
+              $("#courses").html('<option value="">-----</option>');
+            }
+          });
+        });
+  
+  
+      </script>
+      <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>   
 </body>
 </html>

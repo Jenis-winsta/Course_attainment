@@ -12,3 +12,6 @@ class StudentAdmin(ImportExportModelAdmin):
 
 
 admin.site.register(File_Description)
+
+admin.site.register(PassoutYear)
+admin.site.register(AttainmentPercentage)

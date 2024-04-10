@@ -34,7 +34,9 @@ urlpatterns=[
 
     path('assign_course', views.assign_course, name='assign_course'),
     path('ajax/load_teachers_hods/', views.load_teachers_hods, name='load_teachers_hods'),
-    path('ajax/update_course_assignment/', views.update_course_assignment, name='update_course_assignment')
+    path('ajax/update_course_assignment/', views.update_course_assignment, name='update_course_assignment'),
+
+    # path('course_attain/', views.course_attain, name='course_attain'),
 
 
 
