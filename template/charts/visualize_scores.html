@@ -50,6 +50,12 @@
         #signout:hover {
             color: blueviolet;
         }
+        .button-container {
+            display: flex;
+            justify-content: flex-end; /* Align items to the right */
+            margin-top: 20px;
+            margin-right: 20px;
+        }
         
     </style>
 </head>
@@ -90,25 +96,45 @@
                 <!-- Visualization section -->
                 <section>
                     <!-- Year and Course selection form -->
-                    <div class="row mt-3">
+                    <div class="container mt-3">
                         <form action="{% url 'visualization' %}" method="get">
-                            <label for="passout_year_select">Select Passout Year:</label>
-                            <select id="passout_year_select" name="passout_year_select">
-                                {% for passout_year in passout_years %}
-                                    <option value="{{ passout_year.id }}" {% if passout_year.id == selected_passout_year %}selected{% endif %}>{{ passout_year.year }}</option>
-                                {% endfor %}
-                            </select>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="passout_year_select">Select Passout Year:</label>
+                                    <select class="form-select" id="passout_year_select" name="passout_year_select">
+                                        {% for passout_year in passout_years %}
+                                            <option value="{{ passout_year.id }}" {% if passout_year.id == selected_passout_year %}selected{% endif %}>{{ passout_year.year }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="course_select">Select Course:</label>
+                                    <select class="form-select" id="course_select" name="course_select">
+                                        <option value="">------</option>
+                                        {% for course_id, course_code in courses %}
+                                            <option value="{{ course_id }}" {% if course_id == selected_course_id %}selected{% endif %}>{{ course_code }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary">View Data</button>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-center justify-content-end">
+                                <a href="{% url 'upload_data' %}" class="btn btn-success upload-button">Upload Data</a>
+                            </div>
+                                    
+                                    
                         
-                            <label for="course_select">Select Course:</label>
-                            <select id="course_select" name="course_select">
-                                <option value="">------</option>
-                                {% for course_id, course_code in courses %}
-                                    <option value="{{ course_id }}" {% if course_id == selected_course_id %}selected{% endif %}>{{ course_code }}</option>
-                                {% endfor %}
-                            </select>
-                            <button type="submit">View Data</button>
+                        </div>
                         </form>
-                    </div>
+                            
+                        </div>
+                    
                     
                     <!-- Display visualization data -->
                     <div class="row mt-3">
@@ -132,7 +158,7 @@
                         {% endif %}
                     </div>
                 </section>
-                
+            </div>
             </div>
         </div>
     </div>
