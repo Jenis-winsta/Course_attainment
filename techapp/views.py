@@ -7,7 +7,7 @@ from django.contrib import messages
 from users.models import CustomUser
 from django.core import serializers
 from .models import *
-from .forms import *
+# from .forms import *
 from django.shortcuts import get_object_or_404
 
 from django.contrib.auth.decorators import login_required
@@ -568,6 +568,7 @@ def report_page(request):
     # Render the report.html template with the fetched data
     return render(request, 'map/report.html', context)
 
+
 def report_page_range(request):
     # Retrieve all departments
     departments = Department.objects.all()
@@ -694,6 +695,9 @@ def logout(request):
     auth.logout(request)
     return redirect('/')
 
+def admin_logout(request):
+    auth.logout(request)
+    return redirect('/admin')
 
 # Create your views here.
 # def login(request):

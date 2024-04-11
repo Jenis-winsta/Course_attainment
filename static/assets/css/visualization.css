@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #f8f9fa;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.content-wrapper {
+    margin-left: 250px; /* Adjust based on sidebar width */
+    padding: 20px;
+    padding-top: 40px; /* Ensure space for fixed navbar */
+}
+
+.visualization-data {
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+#histogram_graph_html,
+#line_graph_html {
+    width: 100%;
+}
+
+
+.graph-container {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .graph-container {
+        width: 100%; /* Adjust for smaller screens (e.g., mobile devices) */
+        float: none;
+        margin-right: 0;
+    }
+}
+#signout:hover {
+    color: blueviolet;
+}
+.button-container {
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+
+
+ body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f8f9fa;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            margin-left: 250px; /* Adjust based on sidebar width */
+            padding: 20px;
+            padding-top: 40px; /* Ensure space for fixed navbar */
+        }
+
+        .visualization-data {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .graph-container {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        #histogram_graph_html,
+        #line_graph_html {
+            width: 100%;
+        }
+

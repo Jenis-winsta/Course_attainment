@@ -3,6 +3,7 @@ from django.db import models
 from techapp.models import *
 
 
+
 class PassoutYear(models.Model):
     year = models.IntegerField(unique=True)  # Example: 2022, 2023, etc.
 
