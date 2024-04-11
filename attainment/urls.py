@@ -9,5 +9,6 @@ urlpatterns = [
     # path('generate_table/', views.generate_table, name='generate_table'),
     # path('visualization/', views.visualization, name='visualization'),
     path('courses/', views.courses_by_department_semester, name='courses_by_department_semester'),
+    path('overall_report/', views.overall_report, name='overall_report'),
 
 ]

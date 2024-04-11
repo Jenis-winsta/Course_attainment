@@ -1,13 +1,20 @@
-<!-- course_table_partial.html -->
+<!-- attainment/course_table_partial.html -->
+{% load static %}
+{% load custom_filters_temp %}
+
+<style>
+
+</style>
 <table class="table table-bordered">
     <thead>
         <tr>
             <th>Year</th>
             <th>Semester</th>
             <th>Course Code</th>
-            <th>Attainment Percentage (%)</th>
+            <th>Attainment(%)</th>
+            <th> Options</th>
             {% for po in programme_outcomes %}
-                <th>PO {{ po.code }}</th>
+                <th>{{ po.code }}</th>
             {% endfor %}
         </tr>
     </thead>
@@ -18,15 +25,21 @@
                 <td>{{ course.semester }}</td>
                 <td>{{ course.course_code }}</td>
                 <td>{{ course.attainment_percentage }}</td>
+                <td class="options">{{ course.options }}</td>  <!-- Render "Options" value -->
                 {% for po in programme_outcomes %}
-                    {% for po_data in course.po_data %}
-                        {% if po_data.po_code == po.code %}
-                            <td>{{ po_data.strength }}</td>
-                        {% endif %}
-                    {% endfor %}
+                    <td>{{ course.po_data|get_dict_value:po.code|default_if_none:"" }}</td>
                 {% endfor %}
+            </tr>
+            {% if forloop.counter|divisibleby:2 and not forloop.last %}
+                <!-- Apply styling after every second course (except the last course) -->
+                <tr style="margin-top: 0; margin-bottom: 5px;">
+                    <td colspan="{{ programme_outcomes|length|add:5 }}"></td>
+                </tr>
+            {% endif %}
+        {% empty %}
+            <tr>
+                <td colspan="{{ programme_outcomes|length|add:5 }}">No courses found</td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-
