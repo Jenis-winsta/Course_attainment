@@ -4,7 +4,10 @@ from techapp.models import *
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6158449 (advance visualizations using plotly express)
 class PassoutYear(models.Model):
     year = models.IntegerField(unique=True)  # Example: 2022, 2023, etc.
 

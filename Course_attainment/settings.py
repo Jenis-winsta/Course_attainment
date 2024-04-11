@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,6 +44,9 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 # Application definition
 INSTALLED_APPS = [
+    # Customize default django-admin panel
+    'jazzmin',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,8 +60,19 @@ INSTALLED_APPS = [
     'techapp',
     'charts',
     'import_export',
-    'attainment'
+    'attainment',
+    
 ]
+
+
+# CUSTOM ADMIN-PANEL
+JAZZMIN_SETTINGS = {
+    "site_brand": "Admin"
+}
+
+# settings.py
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
