@@ -112,7 +112,7 @@
                             <th>Course Code</th>
                             <th>Attainment (%)</th>
                             {% for po in programme_outcomes %}
-                                <th>{{ po.code }}</th>
+                                <th>{{ po.code }}(%)</th>
                             {% endfor %}
                         </tr>
                     </thead>
@@ -144,8 +144,16 @@
                             {% endfor %}
                             
                         </tr>
+                        <!-- <tr>
+                          <td> Graduate Attainment</td>
+                          <td>{{overall_po_average}}</td>
+                        </tr> -->
                     </tbody>
                 </table>
+                <br><br>
+                <div class="row">
+                  <strong>Graduate Attainment : {{overall_po_average}} %</strong>
+                </div>
             {% endif %}
         </div>
 

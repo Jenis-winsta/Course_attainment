@@ -4,6 +4,7 @@ from techapp.models import *
 from charts.models import *
 from django.http import JsonResponse
 from django.http import HttpResponse, JsonResponse
+from statistics import mean
 
 # Create your views here.
 def course_attain(request):
@@ -74,13 +75,18 @@ def overall_report(request):
                 else:
                     po_averages[po_code] = None
 
+            # Calculate overall average of PO averages
+            overall_po_average = mean(filter(lambda x: x is not None, po_averages.values()))
+
+
             return render(request, 'attainment/overall_report.html', {
                 'departments': Department.objects.all(),  # Pass all departments to the template
                 'passout_years': PassoutYear.objects.all(),  # Pass all passout years to the template
                 'programme_outcomes': programme_outcomes,  # Pass all POs to the template
                 'courses': courses_data,  # Pass fetched course data to the template
                 'department':selected_department.name,
-                'po_averages': po_averages
+                'po_averages': po_averages,
+                'overall_po_average': round(overall_po_average, 2) if overall_po_average else None,
             })
         else:
             return JsonResponse({'error': 'Invalid parameters'}, status=400)
