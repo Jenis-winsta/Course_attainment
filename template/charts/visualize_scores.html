@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualization Page</title>
+
+    <!-- Load external scripts -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Load static assets -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}"> <!-- Custom styles -->
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f8f9fa;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            margin-left: 250px;
+            /* Adjust based on sidebar width */
+            padding: 20px;
+            padding-top: 40px;
+            /* Ensure space for fixed navbar */
+        }
+
+        .visualization-data,
+        .graph-container {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #histogram_graph_html,
+        #line_graph_html,
+        #individual_graph,
+        #trend_graph {
+            width: 80% /* Use full width for graph containers */
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                margin-left: 0;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+
+        #signout:hover {
+            color: blueviolet;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Include sidebar content here -->
+        {% include 'PurpleTemplate/partials/_sidebar.html' %}
+    </div>
+
+    <!-- Main content wrapper -->
+    <div class="content-wrapper">
+        <!-- Navbar -->
+        {% include 'PurpleTemplate/partials/_navbar.html' %}
+
+        <!-- Page header -->
+        <div class="page-header">
+            <h3 class="page-title">
+                <span class="page-title-icon bg-gradient-primary text-white me-2">
+                    <i class="mdi mdi-map menu-icon"></i>
+                </span> Visualize
+            </h3>
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Overview <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Visualization section -->
+        <section>
+            <!-- Year and Course selection form -->
+            <div class="container mt-3">
+                <form action="{% url 'visualization' %}" method="get">
+                    <div class="row align-items-end">
+                        <div class="col-md-3 mb-3">
+                            <label for="passout_year_select" class="form-label">Select Passout Year:</label>
+                            <select class="form-select" id="passout_year_select" name="passout_year_select">
+                                {% for passout_year in passout_years %}
+                                    <option value="{{ passout_year.id }}" {% if passout_year.id == selected_passout_year %}selected{% endif %}>
+                                        {{ passout_year.year }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="course_select" class="form-label">Select Course:</label>
+                            <select class="form-select" id="course_select" name="course_select">
+                                <option value="">------</option>
+                                {% for course_id, course_code in courses %}
+                                    <option value="{{ course_id }}" {% if course_id == selected_course_id %}selected{% endif %}>
+                                        {{ course_code }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button type="submit" class="btn btn-primary">View Data</button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'upload_data' %}" class="btn btn-success">Upload Data</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Display visualization data -->
+            {% if selected_passout_year %}
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="visualization-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4>Passout Year: {{ year }}</h4>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4>Course: {{ selected_course_name }}</h4>
+                                </div>
+                            </div>
+                            <div class="graph-container">
+                                <h2>Percentage of Attainment for {{ year }}</h2>
+                                <h3>Percentage of Attainment: {{ attainment_percentage }}%</h3>
+                                <div id="individual_graph">{{ individual_graph_html | safe }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="graph-container">
+                            <h2>Average & Above Average vs Below Average Over the Years</h2>
+                            <div id="trend_graph">{{ trend_graph_html | safe }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <p>Please select a passout year and course to visualize data.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Histogram Graph -->
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="graph-container">
+                        <h2>Score Distribution Across Years for Course {{ selected_course_name }}</h2>
+                        <div id="histogram_graph_html">{{ histogram_graph_html | safe }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Line Graph -->
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="graph-container">
+                        <h2>Score Range Trends Across Years</h2>
+                        <div id="line_graph_html">{{ line_graph_html | safe }}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Include JavaScript libraries -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- Custom scripts -->
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+</body>
+
+</html>
