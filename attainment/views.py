@@ -143,7 +143,7 @@ def courses_by_department_semester(request):
                         'course_code': '',  # Empty to skip rendering for common cells
                         'attainment_percentage': '',  # Value for the "Options" column in the second row
                         'po_data': {key: round(value * percent_a, 2) for key, value in po_data.items()},  # Multiply each PO value by 20
-                        'options': 'Course\n Attainment%'  # Value for the "Options" column in the second row
+                        'options': 'PO Attainment%'  # Value for the "Options" column in the second row
                     }
                     course_data.append(second_row)
 
