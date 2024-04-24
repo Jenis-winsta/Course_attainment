@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 # Key encryption
 # import os
-from decouple import config
+from decouple import config # type: ignore
 from pathlib import Path
 
 
@@ -36,7 +36,7 @@ CSRF_USE_SESSIONS = False
 # LOGIN_URL = '/login'
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.vercel.app']
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
